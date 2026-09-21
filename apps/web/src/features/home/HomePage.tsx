@@ -1,5 +1,6 @@
 import { SAMPLE_ROOM_ID, createOpaqueId } from "@syncspace/contracts";
-import { listLocalBoards } from "@syncspace/personal-store";
+import { listDue, listLocalBoards, listSchedules } from "@syncspace/personal-store";
+import { describeDue } from "@syncspace/learning";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { setToken } from "../../lib/tokens.js";
@@ -12,9 +13,19 @@ export function HomePage() {
   const navigate = useNavigate();
   const [boards, setBoards] = useState<BoardRow[]>([]);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [dueCount, setDueCount] = useState(0);
+  const [nextDue, setNextDue] = useState<string | null>(null);
+  const [queueSize, setQueueSize] = useState(0);
 
   useEffect(() => {
-    void listLocalBoards().then(setBoards);
+    void Promise.all([listLocalBoards(), listDue(new Date()), listSchedules()]).then(
+      ([local, due, schedules]) => {
+        setBoards(local);
+        setDueCount(due.length);
+        setQueueSize(schedules.length);
+        setNextDue(schedules[0] ? describeDue(schedules[0].dueAt) : null);
+      },
+    );
   }, []);
 
   async function openSample() {
@@ -37,37 +48,77 @@ export function HomePage() {
     navigate(`/board/${id}?mode=standalone${seedStarter ? "&seed=1" : ""}`);
   }
 
+  const lastStandalone = boards.find((board) => board.kind === "standalone");
+
   return (
     <main className="page">
       <section className="hero">
-        <h1>Study together. Keep ratings to yourself.</h1>
+        <h1>Study on this device. Keep ratings private.</h1>
         <p className="lede">
-          SyncSpace Deutsch is a small-group German lesson board. Shared notes and vocabulary travel
-          through Yjs. Private review stays in this browser profile. Starter German is draft teaching
-          material, not a reviewed curriculum.
+          A local lesson board and a private Again / Got it queue are enough for one learner. Partner
+          sync is optional. Starter German is draft teaching material, not a reviewed curriculum.
         </p>
       </section>
 
-      <div className="cards" style={{ marginTop: "1.5rem" }}>
+          <div className="cards" style={{ marginTop: "1.5rem" }}>
+            <article className="card">
+              <h2>Lessons from scratch</h2>
+              <p>
+                Alphabet, sounds, a draft core-500, phrases, grammar, an English→German map, and a
+                sentence builder. Official Goethe and DW pages stay on their own sites.
+              </p>
+              <div className="row">
+                <button type="button" onClick={() => navigate("/learn")}>
+                  Open lessons
+                </button>
+                <button type="button" className="secondary" onClick={() => navigate("/learn/mapper")}>
+                  English map
+                </button>
+              </div>
+            </article>
+            <article className="card">
+              <h2>Private review</h2>
+          <p>
+            {dueCount > 0
+              ? `${dueCount} card${dueCount === 1 ? "" : "s"} due now.`
+              : queueSize > 0
+                ? `Nothing due. ${nextDue ?? ""}`.trim()
+                : "No cards in this profile’s queue yet."}
+          </p>
+          <div className="row">
+            <button type="button" onClick={() => navigate("/review")}>
+              Open review
+            </button>
+            {lastStandalone ? (
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => navigate(`/board/${lastStandalone.id}?mode=standalone`)}
+              >
+                Continue local board
+              </button>
+            ) : null}
+          </div>
+        </article>
         <article className="card">
-          <h2>Sample shared lesson</h2>
-          <p>Open the server-seeded A1–B1 board. The invitation is generated at runtime and is not in git.</p>
-          <button type="button" onClick={() => void openSample()}>
+          <h2>Lesson on this device</h2>
+          <p>Saved on this device. You can study without the sync server. Publishing later would create a new room identity.</p>
+          <div className="row">
+            <button type="button" onClick={() => createStandalone(true)}>
+              Local starter copy
+            </button>
+            <button type="button" className="secondary" onClick={() => createStandalone(false)}>
+              Empty board
+            </button>
+          </div>
+        </article>
+        <article className="card">
+          <h2>Study with a partner</h2>
+          <p>Open the server-seeded A1–B1 board. Needs the sync process on loopback. The invitation is generated at runtime and is not in git.</p>
+          <button type="button" className="secondary" onClick={() => void openSample()}>
             Open {SAMPLE_ROOM_ID}
           </button>
           {joinError ? <p className="banner">{joinError}</p> : null}
-        </article>
-        <article className="card">
-          <h2>Standalone board</h2>
-          <p>Saved on this device. Publishing later would create a new room identity, never overwrite an existing one.</p>
-          <div className="row">
-            <button type="button" onClick={() => createStandalone(false)}>
-              Empty board
-            </button>
-            <button type="button" className="secondary" onClick={() => createStandalone(true)}>
-              Local starter copy
-            </button>
-          </div>
         </article>
       </div>
 
@@ -78,15 +129,15 @@ export function HomePage() {
           <article className="card" key={board.id}>
             <h3>{board.title}</h3>
             <p className="meta">
-              {board.kind} · {board.id}
+              {board.kind === "standalone" ? "saved on this device" : "shared board"} · {board.id}
             </p>
             <Link to={`/board/${board.id}?mode=${board.kind}`}>Open</Link>
           </article>
         ))}
       </div>
       <p className="footer-note">
-        A green connection later will not mean every keystroke is on disk. Two tabs in one profile are
-        not a two-client test.
+        Connected later will not mean every keystroke is on disk. Two tabs in one profile are not a
+        two-client test.
       </p>
     </main>
   );

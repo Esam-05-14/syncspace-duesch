@@ -1,7 +1,16 @@
 import { z } from "zod";
 import { SCHEDULER_VERSION } from "../ids.js";
+import { articleSchema } from "./cards.js";
 
 export const ratingSchema = z.enum(["again", "got-it"]);
+
+export const reviewPromptSchema = z.object({
+  headword: z.string().min(1).max(120),
+  article: articleSchema.nullable(),
+  plural: z.string().max(120).nullable(),
+  glossEn: z.string().min(1).max(200),
+  exampleDe: z.string().min(1).max(400),
+});
 
 export const reviewEventSchema = z.object({
   eventId: z.string().min(8).max(80),
@@ -25,6 +34,7 @@ export const reviewScheduleSchema = z.object({
   box: z.number().int().min(0).max(5),
   dueAt: z.string().min(10),
   active: z.boolean(),
+  prompt: reviewPromptSchema.optional(),
 });
 
 export const personalReviewBackupSchema = z.object({
@@ -37,4 +47,5 @@ export const personalReviewBackupSchema = z.object({
 
 export type ReviewEvent = z.infer<typeof reviewEventSchema>;
 export type ReviewSchedule = z.infer<typeof reviewScheduleSchema>;
+export type ReviewPrompt = z.infer<typeof reviewPromptSchema>;
 export type PersonalReviewBackup = z.infer<typeof personalReviewBackupSchema>;

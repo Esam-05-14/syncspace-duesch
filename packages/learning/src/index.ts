@@ -8,8 +8,11 @@ export {
 export { checkArticleRecall, type ArticleCheck } from "./article-recall.js";
 export {
   BOX_INTERVALS_MS,
+  BOX_LABELS,
   applyRating,
   compareDue,
+  describeBox,
+  describeDue,
   dueAtFor,
   enrollCard,
   isDue,
@@ -17,3 +20,12 @@ export {
   type Box,
   type Rating,
 } from "./scheduler.js";
+export { articleMix, lexemesByTopic, mapEnglishToGerman, normalizeLookup, type MapHit } from "./mapper.js";
+export {
+  accusativeDefinite,
+  accusativeIndefinite,
+  buildSentence,
+  englishIndefinite,
+  lexemeToReviewPrompt,
+  type BuiltSentence,
+} from "./sentence-builder.js";

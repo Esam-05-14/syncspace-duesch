@@ -18,7 +18,7 @@ export function BoardChrome() {
         <p className="meta">
           {id} · {effectiveMode} · schema {board?.schemaVersion ?? "…"}
         </p>
-        <StatusBar session={session} />
+        <StatusBar session={session} mode={effectiveMode} />
         {error ? <p className="banner">{error}</p> : null}
         {effectiveMode === "shared" && !session?.status.authorized ? (
           <p className="banner">
@@ -33,7 +33,11 @@ export function BoardChrome() {
           </NavLink>
           <NavLink to={{ pathname: `/board/${id}/vocabulary`, search: query }}>Vocabulary</NavLink>
           <NavLink to={{ pathname: `/board/${id}/practice`, search: query }}>Practice</NavLink>
-          <NavLink to={{ pathname: `/sync/${id}`, search: query }}>Sync inspector</NavLink>
+          {effectiveMode === "shared" ? (
+            <NavLink to={{ pathname: `/sync/${id}`, search: query }}>Sync inspector</NavLink>
+          ) : (
+            <NavLink to="/review">Private review</NavLink>
+          )}
         </nav>
         <Outlet />
       </main>

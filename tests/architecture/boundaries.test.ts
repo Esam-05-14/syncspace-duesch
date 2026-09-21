@@ -16,6 +16,7 @@ describe("package boundaries", () => {
       read("packages/personal-store/src/review.ts"),
       read("packages/personal-store/src/registry.ts"),
       read("packages/personal-store/src/index.ts"),
+      read("packages/personal-store/src/progress.ts"),
     ].join("\n");
     expect(source.includes("hocuspocus")).toBe(false);
     expect(source.includes("yjs")).toBe(false);
@@ -28,6 +29,8 @@ describe("package boundaries", () => {
       read("packages/learning/src/article-recall.ts"),
       read("packages/learning/src/normalize.ts"),
       read("packages/learning/src/index.ts"),
+      read("packages/learning/src/mapper.ts"),
+      read("packages/learning/src/sentence-builder.ts"),
     ].join("\n");
     expect(source.includes("yjs")).toBe(false);
     expect(source.includes("Y.Doc")).toBe(false);

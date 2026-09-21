@@ -1,4 +1,4 @@
-import type { ReviewEvent, ReviewSchedule } from "@syncspace/contracts";
+import type { ReviewEvent, ReviewPrompt, ReviewSchedule } from "@syncspace/contracts";
 import { personalReviewBackupSchema } from "@syncspace/contracts";
 import { applyRating, compareDue, enrollCard, isDue, type Rating } from "@syncspace/learning";
 import { openPersonalDb } from "./db.js";
@@ -22,11 +22,17 @@ export async function enrollInReview(input: {
   cardId: string;
   contentHash: string;
   now?: Date;
+  prompt?: ReviewPrompt;
 }): Promise<ReviewSchedule> {
   const profileId = input.profileId ?? DEFAULT_PROFILE_ID;
   const db = await openPersonalDb();
   const existing = await db.get("schedules", [profileId, input.cardId]);
   if (existing) {
+    if (!existing.prompt && input.prompt) {
+      const updated = { ...existing, prompt: input.prompt };
+      await db.put("schedules", updated);
+      return updated;
+    }
     return existing;
   }
   const schedule = enrollCard({
@@ -35,6 +41,7 @@ export async function enrollInReview(input: {
     cardId: input.cardId,
     contentHash: input.contentHash,
     now: input.now ?? new Date(),
+    prompt: input.prompt,
   });
   await db.put("schedules", schedule);
   return schedule;

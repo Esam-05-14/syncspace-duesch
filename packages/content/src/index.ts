@@ -2,6 +2,20 @@ import { materializedBoardSchema, type MaterializedBoard } from "@syncspace/cont
 import { STARTER_BOARD, STARTER_PACK_REVIEW, createStarterBoard } from "./starter.js";
 
 export { STARTER_BOARD, STARTER_PACK_REVIEW, createStarterBoard };
+export {
+  ALPHABET,
+  CORE_LEXICON,
+  CURRICULUM_REVIEW,
+  CURRICULUM_SOURCES,
+  GRAMMAR_TOPICS,
+  LESSONS,
+  PHONEMES,
+  PHRASES,
+  ROADMAP,
+  SENTENCE_TEMPLATES,
+  lexiconTopics,
+  validateCurriculum,
+} from "./curriculum/index.js";
 
 export function validateStarterBoard(board: MaterializedBoard = STARTER_BOARD): MaterializedBoard {
   return materializedBoardSchema.parse(board);

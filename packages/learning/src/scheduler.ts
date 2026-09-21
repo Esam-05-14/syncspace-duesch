@@ -1,4 +1,4 @@
-import { SCHEDULER_VERSION, createOpaqueId, type ReviewEvent, type ReviewSchedule } from "@syncspace/contracts";
+import { SCHEDULER_VERSION, createOpaqueId, type ReviewEvent, type ReviewPrompt, type ReviewSchedule } from "@syncspace/contracts";
 
 export const BOX_INTERVALS_MS = {
   0: 10 * 60 * 1000,
@@ -9,8 +9,45 @@ export const BOX_INTERVALS_MS = {
   5: 30 * 24 * 60 * 60 * 1000,
 } as const;
 
+export const BOX_LABELS = {
+  0: "10 min",
+  1: "1 day",
+  2: "3 days",
+  3: "7 days",
+  4: "14 days",
+  5: "30 days",
+} as const;
+
 export type Box = 0 | 1 | 2 | 3 | 4 | 5;
 export type Rating = "again" | "got-it";
+
+export function describeBox(box: Box): string {
+  return `box ${box} (${BOX_LABELS[box]})`;
+}
+
+export function describeDue(dueAt: string, now = new Date()): string {
+  const due = Date.parse(dueAt);
+  if (Number.isNaN(due)) {
+    return dueAt;
+  }
+  const delta = due - now.getTime();
+  if (delta <= 0) {
+    return "due now";
+  }
+  if (delta < 60_000) {
+    return "due in under a minute";
+  }
+  if (delta < 60 * 60 * 1000) {
+    const minutes = Math.max(1, Math.round(delta / 60_000));
+    return `due in ${minutes} min`;
+  }
+  if (delta < 36 * 60 * 60 * 1000) {
+    const hours = Math.max(1, Math.round(delta / (60 * 60 * 1000)));
+    return `due in ${hours} h`;
+  }
+  const days = Math.max(1, Math.round(delta / (24 * 60 * 60 * 1000)));
+  return `due in ${days} d`;
+}
 
 export function nextBox(current: Box, rating: Rating): Box {
   if (rating === "again") {
@@ -29,6 +66,7 @@ export function enrollCard(input: {
   cardId: string;
   contentHash: string;
   now: Date;
+  prompt?: ReviewPrompt;
 }): ReviewSchedule {
   return {
     profileId: input.profileId,
@@ -38,6 +76,7 @@ export function enrollCard(input: {
     box: 0,
     dueAt: input.now.toISOString(),
     active: true,
+    ...(input.prompt ? { prompt: input.prompt } : {}),
   };
 }
 

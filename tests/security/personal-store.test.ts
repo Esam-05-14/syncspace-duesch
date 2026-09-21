@@ -2,11 +2,14 @@ import { afterEach, describe, expect, it } from "vitest";
 import "fake-indexeddb/auto";
 import { createOpaqueId, personalReviewBackupSchema } from "@syncspace/contracts";
 import {
+  clearLessonProgress,
   clearReviewHistory,
   enrollInReview,
+  getLessonProgress,
   listDue,
   listEvents,
   listSchedules,
+  markLessonComplete,
   rateCard,
   restoreReviewBackup,
   setPersonalDatabaseNameForTests,
@@ -95,5 +98,44 @@ describe("isolated personal review stores", () => {
     await clearReviewHistory();
     expect(await listEvents()).toEqual([]);
     expect(await listSchedules()).toEqual([]);
+  });
+
+  it("stores a private study prompt that never needs the shared board", async () => {
+    setPersonalDatabaseNameForTests("syncspace-prompt");
+    const schedule = await enrollInReview({
+      boardId: "board-local",
+      cardId: "voc_tisch",
+      contentHash: HASH,
+      prompt: {
+        headword: "Tisch",
+        article: "der",
+        plural: "Tische",
+        glossEn: "table",
+        exampleDe: "Der Tisch steht in der Küche.",
+      },
+    });
+    expect(schedule.prompt?.headword).toBe("Tisch");
+    const again = await enrollInReview({
+      boardId: "board-local",
+      cardId: "voc_tisch",
+      contentHash: HASH,
+    });
+    expect(again.prompt?.headword).toBe("Tisch");
+    const backup = personalReviewBackupSchema.parse({
+      kind: "personal-review-backup",
+      profileId: "local-profile",
+      exportedAt: "2026-09-21T13:00:00.000Z",
+      events: [],
+      schedules: [schedule],
+    });
+    expect(backup.schedules[0]?.prompt?.article).toBe("der");
+  });
+
+  it("stores lesson ticks in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-lessons");
+    await clearLessonProgress();
+    const first = await markLessonComplete("lesson-alphabet");
+    expect(first.completed).toEqual(["lesson-alphabet"]);
+    expect((await getLessonProgress()).completed).toEqual(["lesson-alphabet"]);
   });
 });

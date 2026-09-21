@@ -12,3 +12,12 @@
 | S7 | Fresh-clone audit recorded | No committed tokens or sqlite data |
 
 When time is tight, extra exercise modes and canvas decoration drop first. Offline proof, privacy separation, and the study loop do not.
+
+## Solo curriculum (local, after S7)
+
+| Surface | Status | Limit |
+| --- | --- | --- |
+| `/learn` roadmap, alphabet, sounds, core-500, phrases, grammar | Draft teaching records on this device | Not a CEFR path; not a Goethe list |
+| English→German mapper + sentence builder | Deterministic over the authored corpus | No translation API |
+| Official Goethe / DW / IPA sources | https links only | We do not host their media |
+| Human review of German | Not recorded | Starter and core-500 stay draft |
