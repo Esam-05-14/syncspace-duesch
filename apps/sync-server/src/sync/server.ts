@@ -1,10 +1,10 @@
 import { Database } from "@hocuspocus/extension-database";
 import { Server } from "@hocuspocus/server";
-import { SCHEMA_VERSION, isRoomName } from "@syncspace/contracts";
+import { SCHEMA_VERSION } from "@syncspace/contracts";
 import { materializeBoard, materializeDigest } from "@syncspace/collab";
 import type DatabaseType from "better-sqlite3";
 import * as Y from "yjs";
-import { tokensEqual } from "../auth/tokens.js";
+import { authorizeRoom } from "../auth/authorize.js";
 import { getSampleInvitation } from "../documents/rooms.js";
 import { activeTokenHashes, fetchSnapshot, storeSnapshot } from "../persistence/sqlite.js";
 
@@ -17,16 +17,21 @@ export function createSyncServer(input: {
   db: DatabaseType.Database;
   host: string;
   port: number;
+  debounce?: number;
+  maxDebounce?: number;
+  quiet?: boolean;
 }): ReturnType<typeof Server.configure> {
-  const { db, host, port } = input;
+  const { db, host, port, debounce = 2000, maxDebounce = 8000, quiet = false } = input;
 
   return Server.configure({
     name: "syncspace-deutsch",
     address: host,
     port,
-    debounce: 2000,
-    maxDebounce: 8000,
+    debounce,
+    maxDebounce,
     timeout: 30_000,
+    quiet,
+    stopOnSignals: false,
     extensions: [
       new Database({
         fetch: async ({ documentName }) => {
@@ -56,17 +61,7 @@ export function createSyncServer(input: {
       }),
     ],
     async onAuthenticate({ token, documentName }) {
-      if (!isRoomName(documentName)) {
-        throw new Error("Unknown room.");
-      }
-      const hashes = activeTokenHashes(db, documentName);
-      if (hashes.length === 0) {
-        throw new Error("Unknown room.");
-      }
-      const ok = hashes.some((hash) => tokensEqual(token, hash));
-      if (!ok) {
-        throw new Error("Invalid room token.");
-      }
+      authorizeRoom(documentName, token, activeTokenHashes(db, documentName));
     },
     async onRequest(data) {
       const { request, response } = data;
@@ -75,7 +70,7 @@ export function createSyncServer(input: {
       const origin = request.headers.origin ?? "";
       const allowOrigin =
         origin.startsWith("http://127.0.0.1:") || origin.startsWith("http://localhost:") ? origin : "";
-      const cors = allowOrigin
+      const cors: Record<string, string> = allowOrigin
         ? {
             "access-control-allow-origin": allowOrigin,
             "access-control-allow-methods": "GET, OPTIONS",
@@ -83,7 +78,7 @@ export function createSyncServer(input: {
           }
         : {};
 
-      const finish = (status: number, headers: Record<string, string>, body: string) => {
+      const finish = (status: number, headers: Record<string, string>, body: string): never => {
         response.writeHead(status, headers);
         response.end(body);
         // Hocuspocus writes a default "OK" unless this hook rejects with a falsy error.
@@ -106,16 +101,17 @@ export function createSyncServer(input: {
         const sample = getSampleInvitation();
         if (!sample) {
           finish(503, { "content-type": "application/json; charset=utf-8", ...cors }, JSON.stringify({ error: "sample-room-not-ready" }));
+        } else {
+          finish(
+            200,
+            {
+              "content-type": "application/json; charset=utf-8",
+              "cache-control": "no-store",
+              ...cors,
+            },
+            JSON.stringify({ ...sample, developmentOnly: true }),
+          );
         }
-        finish(
-          200,
-          {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "no-store",
-            ...cors,
-          },
-          JSON.stringify({ ...sample, developmentOnly: true }),
-        );
       }
 
       if (url.pathname.startsWith("/dev/snapshot/")) {
@@ -123,21 +119,22 @@ export function createSyncServer(input: {
         const row = fetchSnapshot(db, documentId);
         if (!row) {
           finish(404, { "content-type": "application/json; charset=utf-8", ...cors }, JSON.stringify({ error: "no-checkpoint" }));
+        } else {
+          finish(
+            200,
+            {
+              "content-type": "application/json; charset=utf-8",
+              "cache-control": "no-store",
+              ...cors,
+            },
+            JSON.stringify({
+              documentId: row.document_id,
+              sequence: row.checkpoint_seq,
+              serverTime: row.persisted_at,
+              digest: row.digest,
+            }),
+          );
         }
-        finish(
-          200,
-          {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "no-store",
-            ...cors,
-          },
-          JSON.stringify({
-            documentId: row.document_id,
-            sequence: row.checkpoint_seq,
-            serverTime: row.persisted_at,
-            digest: row.digest,
-          }),
-        );
       }
 
       if (url.pathname === "/") {

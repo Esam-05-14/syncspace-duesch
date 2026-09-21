@@ -27,8 +27,8 @@ export function ensureSampleRoom(db: Database.Database): SampleRoom {
 
   if (!sampleToken) {
     sampleToken = generateToken();
-    insertCapability(db, SAMPLE_ROOM_ID, hashToken(sampleToken));
   }
+  insertCapability(db, SAMPLE_ROOM_ID, hashToken(sampleToken));
 
   return { roomId: SAMPLE_ROOM_ID, token: sampleToken };
 }

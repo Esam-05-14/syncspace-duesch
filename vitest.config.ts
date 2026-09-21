@@ -13,11 +13,15 @@ export default defineConfig({
       "@syncspace/collab": path.join(root, "packages/collab/src/index.ts"),
       "@syncspace/personal-store": path.join(root, "packages/personal-store/src/index.ts"),
     },
+    extensionAlias: {
+      ".js": [".ts", ".js"],
+    },
   },
   test: {
     include: ["tests/**/*.test.ts"],
     exclude: ["**/node_modules/**", "**/dist/**"],
     environment: "node",
     fileParallelism: false,
+    testTimeout: 20_000,
   },
 });

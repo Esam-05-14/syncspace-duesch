@@ -28,7 +28,9 @@ export function BoardChrome() {
           </p>
         ) : null}
         <nav className="row" style={{ margin: "1rem 0" }}>
-          <NavLink to={{ pathname: `/board/${id}`, search: query }}>Board</NavLink>
+          <NavLink end to={{ pathname: `/board/${id}`, search: query }}>
+            Board
+          </NavLink>
           <NavLink to={{ pathname: `/board/${id}/vocabulary`, search: query }}>Vocabulary</NavLink>
           <NavLink to={{ pathname: `/board/${id}/practice`, search: query }}>Practice</NavLink>
           <NavLink to={{ pathname: `/sync/${id}`, search: query }}>Sync inspector</NavLink>
