@@ -1,0 +1,16 @@
+---
+description: SyncSpace Deutsch product and architecture rules
+alwaysApply: true
+---
+
+SyncSpace Deutsch is a deterministic collaborative German study tool, not an AI wrapper.
+
+Read `docs/project-context.md`, `docs/versions.md`, `docs/conflict-policy.md`, and `AGENTS.md` before changing shared/private ownership, schema, deletion, grading, or room access.
+
+Use separate status language: saved on this device, connected, initial synchronization complete, server checkpoint recorded.
+
+Seed shared rooms once on the server. Persist binary Yjs state. Keep review events out of Yjs, awareness, exports, and the sync server.
+
+Starter German stays draft until a human review is recorded. Do not fabricate that review.
+
+Never commit room tokens. Do not commit or push unless the user asks.

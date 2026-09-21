@@ -1,0 +1,17 @@
+{
+  "$id": "https://syncspace.local/schemas/materialized-board/1.0.0",
+  "title": "MaterializedBoard",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "boardId", "title", "levelTag", "mode", "cards", "connections", "tombstones"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "boardId": { "type": "string" },
+    "title": { "type": "string" },
+    "levelTag": { "type": "string" },
+    "mode": { "enum": ["standalone", "shared"] },
+    "cards": { "type": "array", "maxItems": 150 },
+    "connections": { "type": "array", "maxItems": 300 },
+    "tombstones": { "type": "array", "maxItems": 400 }
+  }
+}

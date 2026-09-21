@@ -1,0 +1,145 @@
+:root {
+  color-scheme: light;
+  --paper: #f4efe4;
+  --ink: #1d241c;
+  --forest: #243127;
+  --moss: #3d5a45;
+  --rule: #d6cdb8;
+  --card: #fffdf7;
+  --accent: #c46b3a;
+  --warn: #8a4b12;
+  --ok: #2f6b45;
+  --muted: #5c6558;
+  --shadow: 0 10px 30px rgba(36, 49, 39, 0.08);
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; margin: 0; }
+body {
+  background:
+    radial-gradient(circle at 10% 0%, #fff8ea, transparent 40%),
+    var(--paper);
+}
+
+a { color: var(--moss); }
+button, input, select, textarea {
+  font: inherit;
+}
+button {
+  border: 1px solid var(--forest);
+  background: var(--forest);
+  color: #f4efe4;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+button.secondary {
+  background: transparent;
+  color: var(--forest);
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--rule);
+  background: #fff;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+}
+
+.shell { min-height: 100vh; display: flex; flex-direction: column; }
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--rule);
+  background: rgba(244, 239, 228, 0.92);
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+.brand { text-decoration: none; color: inherit; }
+.brand small { display: block; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.04em; }
+nav { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+nav a { text-decoration: none; color: var(--muted); }
+nav a.active, nav a:hover { color: var(--forest); }
+
+.page { width: min(1100px, calc(100% - 2rem)); margin: 1.25rem auto 3rem; }
+.hero h1, .page h1 { font-weight: 650; letter-spacing: -0.03em; margin: 0 0 0.4rem; }
+.lede { color: var(--muted); max-width: 42rem; }
+
+.grid { display: grid; gap: 1rem; }
+.cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+.card h2, .card h3 { margin: 0 0 0.4rem; font-size: 1.05rem; }
+.meta { color: var(--muted); font-size: 0.9rem; }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.badge.draft { color: var(--warn); border-color: #e0c19a; }
+.badge.article { font-variant: all-small-caps; letter-spacing: 0.06em; color: var(--forest); }
+
+.status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.status-strip b { color: var(--ink); font-weight: 600; }
+.banner {
+  border-left: 4px solid var(--accent);
+  background: #fff7ee;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+.table-wrap { overflow: auto; }
+table { width: 100%; border-collapse: collapse; background: var(--card); }
+th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.editor { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: #fff; }
+.cm-editor { min-height: 12rem; }
+.event-log { list-style: none; padding: 0; margin: 0; }
+.event-log li { padding: 0.55rem 0; border-bottom: 1px solid var(--rule); }
+.canvas {
+  position: relative;
+  min-height: 28rem;
+  background:
+    linear-gradient(var(--rule) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+}
+.canvas-card {
+  position: absolute;
+  width: 210px;
+  background: #fffdf7;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 0.55rem 0.7rem;
+  box-shadow: var(--shadow);
+}
+.footer-note { color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
+
+@media (max-width: 720px) {
+  .page { width: calc(100% - 1.2rem); }
+  .canvas { display: none; }
+}

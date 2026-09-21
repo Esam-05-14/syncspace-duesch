@@ -1,0 +1,23 @@
+{
+  "name": "@syncspace/sync-server",
+  "version": "0.1.0-s1",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@hocuspocus/extension-database": "2.15.3",
+    "@hocuspocus/server": "2.15.3",
+    "@syncspace/collab": "0.1.0-s1",
+    "@syncspace/content": "0.1.0-s1",
+    "@syncspace/contracts": "0.1.0-s1",
+    "better-sqlite3": "13.0.3",
+    "yjs": "13.6.32"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "7.6.13",
+    "tsx": "4.23.15"
+  }
+}

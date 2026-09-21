@@ -1,0 +1,30 @@
+{
+  "name": "syncspace-deutsch",
+  "private": true,
+  "version": "0.1.0-s1",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24.21.0 <25",
+    "npm": ">=11.19.0 <12"
+  },
+  "scripts": {
+    "dev": "concurrently -n web,sync -c teal,yellow \"npm run dev -w @syncspace/web\" \"npm run dev -w @syncspace/sync-server\"",
+    "build": "tsc -b && npm run build -w @syncspace/web",
+    "typecheck": "tsc -b --pretty false && npm run typecheck -w @syncspace/web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "preview": "npm run build -w @syncspace/web && npm run preview -w @syncspace/web",
+    "verify": "npm test && npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "concurrently": "9.2.1",
+    "typescript": "6.0.3",
+    "vitest": "5.0.1",
+    "yjs": "13.6.32"
+  }
+}
