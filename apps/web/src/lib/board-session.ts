@@ -5,14 +5,15 @@ import {
   materializeBoard,
 } from "@syncspace/collab";
 import { createStarterBoard } from "@syncspace/content";
-import { rememberBoard } from "@syncspace/personal-store";
+import { rememberBoard, getRememberedToken } from "@syncspace/personal-store";
 import type { MaterializedBoard, SyncEvent } from "@syncspace/contracts";
 import * as Y from "yjs";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { createSyncEvent, pushEvent } from "./sync-log.js";
-import { getToken } from "./tokens.js";
+import { getToken, setToken } from "./tokens.js";
 
 const SYNC_WS = import.meta.env.VITE_SYNC_WS ?? "ws://127.0.0.1:4357";
+const SYNC_HTTP = import.meta.env.VITE_SYNC_HTTP ?? "http://127.0.0.1:4357";
 
 export type SessionStatus = {
   localRestore: boolean;
@@ -64,6 +65,19 @@ export async function openBoardSession(input: {
 }): Promise<BoardSession> {
   const existing = sessions.get(input.boardId);
   if (existing) {
+    if (input.mode === "shared" && !existing.provider) {
+      let token = getToken(input.boardId);
+      if (!token) {
+        token = await getRememberedToken(input.boardId);
+        if (token) {
+          setToken(input.boardId, token);
+        }
+      }
+      if (token) {
+        attachProvider(existing, input.boardId, token);
+        watchCheckpoints(existing, input.boardId);
+      }
+    }
     return existing;
   }
 
@@ -137,11 +151,19 @@ export async function openBoardSession(input: {
   });
 
   if (input.mode === "shared") {
-    const token = getToken(input.boardId);
+    let token = getToken(input.boardId);
+    if (!token) {
+      token = await getRememberedToken(input.boardId);
+      if (token) {
+        setToken(input.boardId, token);
+        note(session, "authorized", "Loaded a remembered room token from this browser profile.");
+      }
+    }
     if (!token) {
       note(session, "storage-failure", "No room token in memory. This device is not authorized.");
     } else {
       attachProvider(session, input.boardId, token);
+      watchCheckpoints(session, input.boardId);
     }
   }
 
@@ -195,6 +217,37 @@ function attachProvider(session: BoardSession, boardId: string, token: string): 
     }
     emit(boardId);
   });
+}
+
+const checkpointWatches = new Set<string>();
+
+function watchCheckpoints(session: BoardSession, boardId: string): void {
+  if (checkpointWatches.has(boardId) || typeof window === "undefined") {
+    return;
+  }
+  checkpointWatches.add(boardId);
+  const tick = async () => {
+    try {
+      const response = await fetch(`${SYNC_HTTP}/dev/snapshot/${boardId}`);
+      if (!response.ok) {
+        return;
+      }
+      const body = (await response.json()) as { sequence?: number };
+      if (typeof body.sequence !== "number") {
+        return;
+      }
+      const label = `seq ${body.sequence}`;
+      if (session.status.lastCheckpoint !== label) {
+        session.status.lastCheckpoint = label;
+        note(session, "checkpoint", `Server checkpoint recorded: sequence ${body.sequence}.`);
+        emit(boardId);
+      }
+    } catch {
+      // Inspector and status stay honest if the server is unreachable.
+    }
+  };
+  void tick();
+  window.setInterval(() => void tick(), 4000);
 }
 
 export function simulateDisconnect(boardId: string): void {

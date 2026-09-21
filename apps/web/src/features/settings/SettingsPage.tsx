@@ -7,6 +7,7 @@ import {
   listRememberedRooms,
   listSchedules,
   rememberRoom,
+  restoreReviewBackup,
   setDisplayName,
 } from "@syncspace/personal-store";
 import { SAMPLE_ROOM_ID } from "@syncspace/contracts";
@@ -20,6 +21,7 @@ export function SettingsPage() {
   const [rooms, setRooms] = useState<Array<{ roomId: string }>>([]);
   const [invite, setInvite] = useState<string | null>(null);
   const [rememberWarning, setRememberWarning] = useState(false);
+  const [importMessage, setImportMessage] = useState<string | null>(null);
 
   useEffect(() => {
     void getDisplayName().then(setName);
@@ -54,6 +56,19 @@ export function SettingsPage() {
       schedules,
     });
     downloadJson("personal-review.json", payload);
+  }
+
+  async function importReview(file: File) {
+    setImportMessage(null);
+    try {
+      const parsed: unknown = JSON.parse(await file.text());
+      const result = await restoreReviewBackup(parsed);
+      setImportMessage(
+        `Imported ${result.importedEvents} ratings and ${result.importedSchedules} cards into this profile. Skipped ${result.skippedEvents} duplicate events.`,
+      );
+    } catch {
+      setImportMessage("That file is not a personal-review backup for this app.");
+    }
   }
 
   function showInvite() {
@@ -95,7 +110,22 @@ export function SettingsPage() {
           <button type="button" className="secondary" onClick={() => void exportReview()}>
             Export private review
           </button>
+          <label className="secondary" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+            Import private review
+            <input
+              type="file"
+              accept="application/json,.json"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) {
+                  void importReview(file);
+                }
+                event.target.value = "";
+              }}
+            />
+          </label>
         </div>
+        {importMessage ? <p className="banner">{importMessage}</p> : null}
       </article>
       <article className="card">
         <h2>Room access</h2>

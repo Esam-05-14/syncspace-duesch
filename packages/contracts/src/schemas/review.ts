@@ -7,7 +7,7 @@ export const reviewEventSchema = z.object({
   eventId: z.string().min(8).max(80),
   profileId: z.string().min(4).max(80),
   boardId: z.string().min(3).max(80),
-  cardId: z.string().min(8).max(80),
+  cardId: z.string().min(6).max(80),
   contentHash: z.string().length(64),
   rating: ratingSchema,
   priorBox: z.number().int().min(0).max(5),
@@ -20,7 +20,7 @@ export const reviewEventSchema = z.object({
 export const reviewScheduleSchema = z.object({
   profileId: z.string(),
   boardId: z.string(),
-  cardId: z.string(),
+  cardId: z.string().min(6).max(80),
   contentHash: z.string().length(64),
   box: z.number().int().min(0).max(5),
   dueAt: z.string().min(10),

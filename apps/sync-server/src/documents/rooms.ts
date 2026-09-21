@@ -4,7 +4,14 @@ import { STARTER_BOARD } from "@syncspace/content";
 import * as Y from "yjs";
 import type Database from "better-sqlite3";
 import { generateToken, hashToken } from "../auth/tokens.js";
-import { fetchSnapshot, getRoom, insertCapability, insertRoom, storeSnapshot } from "../persistence/sqlite.js";
+import {
+  fetchSnapshot,
+  getRoom,
+  insertCapability,
+  insertRoom,
+  revokeCapability,
+  storeSnapshot,
+} from "../persistence/sqlite.js";
 
 export type SampleRoom = {
   roomId: string;
@@ -35,4 +42,16 @@ export function ensureSampleRoom(db: Database.Database): SampleRoom {
 
 export function getSampleInvitation(): SampleRoom | undefined {
   return sampleToken ? { roomId: SAMPLE_ROOM_ID, token: sampleToken } : undefined;
+}
+
+export function rotateSampleToken(db: Database.Database): SampleRoom {
+  if (!getRoom(db, SAMPLE_ROOM_ID)) {
+    throw new Error("Sample room is not seeded.");
+  }
+  if (sampleToken) {
+    revokeCapability(db, SAMPLE_ROOM_ID, hashToken(sampleToken));
+  }
+  sampleToken = generateToken();
+  insertCapability(db, SAMPLE_ROOM_ID, hashToken(sampleToken));
+  return { roomId: SAMPLE_ROOM_ID, token: sampleToken };
 }

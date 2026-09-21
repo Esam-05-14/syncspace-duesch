@@ -72,6 +72,15 @@ export function activeTokenHashes(db: Database.Database, documentId: string): st
   return rows.map((row) => row.token_hash);
 }
 
+export function revokeCapability(db: Database.Database, documentId: string, tokenHash: string): boolean {
+  const result = db
+    .prepare(
+      "UPDATE capabilities SET revoked_at = ? WHERE document_id = ? AND token_hash = ? AND revoked_at IS NULL",
+    )
+    .run(new Date().toISOString(), documentId, tokenHash);
+  return result.changes > 0;
+}
+
 export function fetchSnapshot(db: Database.Database, documentId: string): SnapshotRow | undefined {
   return db.prepare("SELECT * FROM snapshots WHERE document_id = ?").get(documentId) as SnapshotRow | undefined;
 }

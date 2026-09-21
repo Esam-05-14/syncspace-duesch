@@ -4,6 +4,13 @@ import type { ReviewEvent, ReviewSchedule } from "@syncspace/contracts";
 const DB_NAME = "syncspace-personal";
 const DB_VERSION = 1;
 
+let activeName = DB_NAME;
+
+/** Test isolation only. Production always uses `syncspace-personal`. */
+export function setPersonalDatabaseNameForTests(name: string | null): void {
+  activeName = name ?? DB_NAME;
+}
+
 export type RememberedRoom = {
   roomId: string;
   token: string;
@@ -29,7 +36,7 @@ export type PersonalSchema = {
 };
 
 export async function openPersonalDb(): Promise<IDBPDatabase<PersonalSchema>> {
-  return openDB<PersonalSchema>(DB_NAME, DB_VERSION, {
+  return openDB<PersonalSchema>(activeName, DB_VERSION, {
     upgrade(db) {
       if (!db.objectStoreNames.contains("settings")) {
         db.createObjectStore("settings", { keyPath: "key" });

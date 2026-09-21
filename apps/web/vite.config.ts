@@ -11,6 +11,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
+      injectRegister: "auto",
       includeAssets: ["favicon.svg"],
       manifest: {
         name: "SyncSpace Deutsch",

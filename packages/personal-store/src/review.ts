@@ -1,4 +1,5 @@
 import type { ReviewEvent, ReviewSchedule } from "@syncspace/contracts";
+import { personalReviewBackupSchema } from "@syncspace/contracts";
 import { applyRating, compareDue, enrollCard, isDue, type Rating } from "@syncspace/learning";
 import { openPersonalDb } from "./db.js";
 
@@ -96,16 +97,43 @@ export async function listEvents(profileId = DEFAULT_PROFILE_ID): Promise<Review
 
 export async function clearReviewHistory(profileId = DEFAULT_PROFILE_ID): Promise<void> {
   const db = await openPersonalDb();
+  const events = (await db.getAll("events")).filter((row) => row.profileId === profileId);
+  const schedules = (await db.getAll("schedules")).filter((row) => row.profileId === profileId);
   const tx = db.transaction(["events", "schedules"], "readwrite");
-  for (const event of await tx.objectStore("events").getAll()) {
-    if (event.profileId === profileId) {
-      await tx.objectStore("events").delete(event.eventId);
+  await Promise.all([
+    ...events.map((event) => tx.objectStore("events").delete(event.eventId)),
+    ...schedules.map((schedule) => tx.objectStore("schedules").delete([schedule.profileId, schedule.cardId])),
+    tx.done,
+  ]);
+}
+
+export async function restoreReviewBackup(
+  raw: unknown,
+  profileId = DEFAULT_PROFILE_ID,
+): Promise<{ importedEvents: number; importedSchedules: number; skippedEvents: number }> {
+  const backup = personalReviewBackupSchema.parse(raw);
+  const db = await openPersonalDb();
+  const existingIds = new Set((await db.getAll("events")).map((row) => row.eventId));
+  const events: ReviewEvent[] = [];
+  let skippedEvents = 0;
+  for (const event of backup.events) {
+    if (existingIds.has(event.eventId)) {
+      skippedEvents += 1;
+      continue;
     }
+    existingIds.add(event.eventId);
+    events.push({ ...event, profileId });
   }
-  for (const schedule of await tx.objectStore("schedules").getAll()) {
-    if (schedule.profileId === profileId) {
-      await tx.objectStore("schedules").delete([schedule.profileId, schedule.cardId]);
-    }
-  }
-  await tx.done;
+  const schedules: ReviewSchedule[] = backup.schedules.map((schedule) => ({ ...schedule, profileId }));
+  const tx = db.transaction(["events", "schedules"], "readwrite");
+  await Promise.all([
+    ...events.map((event) => tx.objectStore("events").add(event)),
+    ...schedules.map((schedule) => tx.objectStore("schedules").put(schedule)),
+    tx.done,
+  ]);
+  return {
+    importedEvents: events.length,
+    importedSchedules: schedules.length,
+    skippedEvents,
+  };
 }

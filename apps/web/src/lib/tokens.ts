@@ -1,5 +1,9 @@
 const memory = new Map<string, string>();
 
+export function invitationPath(boardId: string, token: string): string {
+  return `/board/${boardId}?mode=shared#token=${token}`;
+}
+
 export function captureTokenFromLocation(boardId: string): string | undefined {
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   const fromHash = hash.get("token") ?? undefined;
@@ -28,5 +32,5 @@ export function clearToken(boardId: string): void {
 }
 
 export function invitationUrl(boardId: string, token: string): string {
-  return `${window.location.origin}/board/${boardId}#token=${token}`;
+  return `${window.location.origin}${invitationPath(boardId, token)}`;
 }

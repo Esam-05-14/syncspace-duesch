@@ -13,7 +13,8 @@ This is ordinary software, not an AI wrapper. Shared editing, persistence, finit
 3. Practice dictionary-article recall. Starter keys are **draft** until a human German review is recorded.
 4. Put selected nouns on a private Again / Got it queue. Reload and see the next due time.
 5. Inspect real connection and checkpoint events.
-6. Export the visible board as JSON, and export this profile’s review separately.
+6. Export the visible board as JSON, and export this profile’s review separately. Import restores this profile only.
+7. Join the same room from a second isolated profile with a capability token (`?mode=shared#token=`).
 
 ## Local setup
 

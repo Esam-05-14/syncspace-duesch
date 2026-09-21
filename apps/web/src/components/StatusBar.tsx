@@ -17,7 +17,7 @@ export function StatusBar({ session }: { session?: BoardSession }) {
         Initial sync: <b>{status?.initialSync ? "complete" : "not complete"}</b>
       </span>
       <span>
-        Server checkpoint: <b>{status?.lastCheckpoint ?? "not shown here"}</b>
+        Server checkpoint recorded: <b>{status?.lastCheckpoint ?? "not yet"}</b>
       </span>
     </div>
   );

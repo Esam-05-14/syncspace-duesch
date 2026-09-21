@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import * as Y from "yjs";
 import { materializeBoard, upsertVocabulary } from "@syncspace/collab";
 import { SAMPLE_ROOM_ID } from "@syncspace/contracts";
-import { ensureSampleRoom } from "../../apps/sync-server/src/documents/rooms.ts";
+import { ensureSampleRoom, rotateSampleToken } from "../../apps/sync-server/src/documents/rooms.ts";
 import { fetchSnapshot, openSyncDatabase } from "../../apps/sync-server/src/persistence/sqlite.ts";
 import { createSyncServer } from "../../apps/sync-server/src/sync/server.ts";
 import { connectIsolatedClient, destroyClient, unusedLoopbackPort } from "../helpers/isolated-client.ts";
@@ -143,5 +143,61 @@ describe("two isolated shared-room clients", () => {
     });
     await waitUntil(() => reader.provider.synced && hasHeadword(reader.document, "Apfel"), 15_000);
     expect(materializeBoard(reader.document).cards.some((card) => card.id === "voc_tisch")).toBe(true);
+  });
+
+  it("rejects the old token after rotation on reconnect", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "syncspace-revoke-"));
+    const db = openSyncDatabase(dir);
+    const sample = ensureSampleRoom(db);
+    const oldToken = sample.token;
+    const port = await unusedLoopbackPort();
+    const server = createSyncServer({
+      db,
+      host: "127.0.0.1",
+      port,
+      debounce: 40,
+      maxDebounce: 120,
+      quiet: true,
+    });
+    await server.listen();
+    cleanups.push(async () => {
+      await server.destroy();
+      db.close();
+    });
+
+    const url = `ws://127.0.0.1:${port}`;
+    let nextToken = "";
+    const before = connectIsolatedClient({ url, roomId: sample.roomId, token: oldToken });
+    try {
+      await waitUntil(() => before.provider.synced, 15_000);
+      const rotated = rotateSampleToken(db);
+      expect(rotated.token).not.toBe(oldToken);
+      nextToken = rotated.token;
+    } finally {
+      await destroyClient(before);
+    }
+
+    let rejected = false;
+    const stale = connectIsolatedClient({
+      url,
+      roomId: sample.roomId,
+      token: oldToken,
+      connect: false,
+    });
+    stale.provider.on("authenticationFailed", () => {
+      rejected = true;
+    });
+    await stale.provider.connect();
+    cleanups.push(async () => {
+      await destroyClient(stale);
+    });
+    await waitUntil(() => rejected, 15_000);
+
+    const fresh = connectIsolatedClient({ url, roomId: sample.roomId, token: nextToken });
+    cleanups.push(async () => {
+      await destroyClient(fresh);
+    });
+    await waitUntil(() => fresh.provider.synced, 15_000);
+    expect(materializeBoard(fresh.document).cards.some((card) => card.id === "voc_tisch")).toBe(true);
   });
 });

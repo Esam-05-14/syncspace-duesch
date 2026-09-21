@@ -8,19 +8,19 @@ export function BoardChrome() {
   const [params] = useSearchParams();
   const mode = params.get("mode") === "shared" ? "shared" : "standalone";
   const seedStarter = params.get("seed") === "1";
-  const { session, board, error } = useBoard(id, mode, seedStarter);
+  const { session, board, error, mode: effectiveMode } = useBoard(id, mode, seedStarter);
   const query = params.toString();
 
   return (
-    <BoardContext.Provider value={{ boardId: id, mode, session, board }}>
+    <BoardContext.Provider value={{ boardId: id, mode: effectiveMode, session, board }}>
       <main className="page">
         <h1>{board?.title ?? "Lesson board"}</h1>
         <p className="meta">
-          {id} · {mode} · schema {board?.schemaVersion ?? "…"}
+          {id} · {effectiveMode} · schema {board?.schemaVersion ?? "…"}
         </p>
         <StatusBar session={session} />
         {error ? <p className="banner">{error}</p> : null}
-        {mode === "shared" && !session?.status.authorized ? (
+        {effectiveMode === "shared" && !session?.status.authorized ? (
           <p className="banner">
             Shared room: this device needs a capability token. Open the sample lesson from Home, or
             paste an invitation that includes <code>#token=</code>. The token is stripped from the
