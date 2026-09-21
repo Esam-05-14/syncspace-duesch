@@ -20,4 +20,6 @@ When time is tight, extra exercise modes and canvas decoration drop first. Offli
 | `/learn` roadmap, alphabet, sounds, core-500, phrases, grammar | Draft teaching records on this device | Not a CEFR path; not a Goethe list |
 | English→German mapper + sentence builder | Deterministic over the authored corpus | No translation API |
 | Official Goethe / DW / IPA sources | https links only | We do not host their media |
+| `/learn/inquire` umlaut fold, operators, typo repair | Deterministic over the authored corpus | No translation API; recent queries stay in this profile |
+| `/learn/skills` four-skill resource page | Official Goethe / DW / Deutschlandfunk links | We do not host audio or exam papers |
 | Human review of German | Not recorded | Starter and core-500 stay draft |

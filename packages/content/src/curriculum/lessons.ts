@@ -8,6 +8,8 @@ export const LESSONS: Lesson[] = [
   { id: "lesson-grammar", titleEn: "Grammar", kind: "grammar", summaryEn: "Gender, present tense, word order, accusative, possessives, and a first look at modals.", minutes: 25 },
   { id: "lesson-mapper", titleEn: "English → German map", kind: "mapper", summaryEn: "Type an English gloss. The matcher returns authored German, never a generated translation.", minutes: 10 },
   { id: "lesson-builder", titleEn: "Sentence builder", kind: "builder", summaryEn: "Fill a finite A1 pattern from the corpus so the word sits in a full clause.", minutes: 15 },
+  { id: "lesson-inquire", titleEn: "Inquiry", kind: "inquire", summaryEn: "Look up German or English across words, phrases, grammar, and sounds. Fold umlauts; filter by article, topic, or part of speech.", minutes: 10 },
+  { id: "lesson-skills", titleEn: "Four skills", kind: "skills", summaryEn: "Listening, reading, writing, and speaking resources: official Goethe and DW pages plus the local drill that matches each skill.", minutes: 10 },
   { id: "lesson-sources", titleEn: "Official practice", kind: "sources", summaryEn: "Goethe practice and Deutsche Welle stay on their own sites. We only store https links.", minutes: 10 },
 ];
 
@@ -19,7 +21,9 @@ export const ROADMAP: RoadmapStation[] = [
   { id: "station-grammar", order: 5, lessonId: "lesson-grammar", titleEn: "First grammar", goalEn: "Keep gender, present-tense ich/du/er, and statement vs question order apart." },
   { id: "station-mapper", order: 6, lessonId: "lesson-mapper", titleEn: "Recall from English", goalEn: "Look up an English word you know and attach the German form plus hook." },
   { id: "station-builder", order: 7, lessonId: "lesson-builder", titleEn: "Put it in a sentence", goalEn: "Build six pattern types without inventing extra German." },
-  { id: "station-sources", order: 8, lessonId: "lesson-sources", titleEn: "Official practice", goalEn: "Open Goethe and Nicos Weg when you want tasks we do not host." },
+  { id: "station-inquire", order: 8, lessonId: "lesson-inquire", titleEn: "Ask the list", goalEn: "Find a word or phrase in one box: umlaut fold, article filter, recent queries." },
+  { id: "station-skills", order: 9, lessonId: "lesson-skills", titleEn: "Four skills", goalEn: "Open official listening, reading, writing, and speaking practice; keep audio on Goethe and DW." },
+  { id: "station-sources", order: 10, lessonId: "lesson-sources", titleEn: "Official practice", goalEn: "Open Goethe and Nicos Weg when you want tasks we do not host." },
 ];
 
 export const SENTENCE_TEMPLATES: SentenceTemplate[] = [

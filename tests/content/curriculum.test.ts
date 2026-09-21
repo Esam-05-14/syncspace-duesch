@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CORE_LEXICON, PHRASES, validateCurriculum } from "@syncspace/content";
+import { CORE_LEXICON, PHRASES, SKILL_RESOURCES, validateCurriculum } from "@syncspace/content";
 
 describe("solo curriculum", () => {
   const curriculum = validateCurriculum();
@@ -38,7 +38,16 @@ describe("solo curriculum", () => {
     expect(PHRASES.length).toBeGreaterThanOrEqual(50);
     expect(PHRASES.every((row) => row.contentStatus === "draft")).toBe(true);
     expect(curriculum.letters).toHaveLength(30);
-    expect(curriculum.roadmap).toHaveLength(8);
+    expect(curriculum.roadmap).toHaveLength(10);
     expect(curriculum.grammar).toHaveLength(8);
+  });
+
+  it("lists https resources for all four skills", () => {
+    const skills = new Set(SKILL_RESOURCES.map((row) => row.skill));
+    expect([...skills].sort()).toEqual(["listen", "read", "speak", "write"]);
+    expect(SKILL_RESOURCES.every((row) => row.url.startsWith("https://"))).toBe(true);
+    expect(curriculum.skills).toHaveLength(SKILL_RESOURCES.length);
+    expect(curriculum.lessons.some((row) => row.kind === "inquire")).toBe(true);
+    expect(curriculum.lessons.some((row) => row.kind === "skills")).toBe(true);
   });
 });

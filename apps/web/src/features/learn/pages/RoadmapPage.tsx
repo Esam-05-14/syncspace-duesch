@@ -10,6 +10,8 @@ const PATH: Record<string, string> = {
   "lesson-grammar": "/learn/grammar",
   "lesson-mapper": "/learn/mapper",
   "lesson-builder": "/learn/builder",
+  "lesson-inquire": "/learn/inquire",
+  "lesson-skills": "/learn/skills",
   "lesson-sources": "/learn/sources",
 };
 

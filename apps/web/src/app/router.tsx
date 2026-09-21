@@ -12,9 +12,11 @@ import { LearnChrome } from "../features/learn/LearnChrome.js";
 import { AlphabetPage } from "../features/learn/pages/AlphabetPage.js";
 import { BuilderPage } from "../features/learn/pages/BuilderPage.js";
 import { GrammarPage } from "../features/learn/pages/GrammarPage.js";
+import { InquirePage } from "../features/learn/pages/InquirePage.js";
 import { MapperPage } from "../features/learn/pages/MapperPage.js";
 import { PhrasesPage } from "../features/learn/pages/PhrasesPage.js";
 import { RoadmapPage } from "../features/learn/pages/RoadmapPage.js";
+import { SkillsPage } from "../features/learn/pages/SkillsPage.js";
 import { SoundsPage } from "../features/learn/pages/SoundsPage.js";
 import { SourcesPage } from "../features/learn/pages/SourcesPage.js";
 import { WordsPage } from "../features/learn/pages/WordsPage.js";
@@ -34,6 +36,8 @@ export function AppRouter() {
             <Route path="grammar" element={<GrammarPage />} />
             <Route path="mapper" element={<MapperPage />} />
             <Route path="builder" element={<BuilderPage />} />
+            <Route path="inquire" element={<InquirePage />} />
+            <Route path="skills" element={<SkillsPage />} />
             <Route path="sources" element={<SourcesPage />} />
           </Route>
           <Route path="/review" element={<ReviewPage />} />

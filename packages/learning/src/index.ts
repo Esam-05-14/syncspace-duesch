@@ -29,3 +29,13 @@ export {
   lexemeToReviewPrompt,
   type BuiltSentence,
 } from "./sentence-builder.js";
+export {
+  editDistance,
+  foldGerman,
+  inquire,
+  parseInquiry,
+  type InquiryCorpus,
+  type InquiryHit,
+  type InquiryKind,
+  type ParsedInquiry,
+} from "./inquire.js";

@@ -1,33 +1,38 @@
 import { CORE_LEXICON, lexiconTopics } from "@syncspace/content";
 import { CURRICULUM_BOARD_ID, contentHash } from "@syncspace/contracts";
-import { articleMix, lexemeToReviewPrompt } from "@syncspace/learning";
+import { articleMix, foldGerman, lexemeToReviewPrompt } from "@syncspace/learning";
 import { enrollInReview, listSchedules } from "@syncspace/personal-store";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { SpeakButton } from "../SpeakButton.js";
 import { StationComplete } from "../StationComplete.js";
 import { ArticleMix } from "../visualizers/ArticleMix.js";
 
 export function WordsPage() {
   const topics = useMemo(() => ["all", ...lexiconTopics()], []);
+  const [params] = useSearchParams();
   const [topic, setTopic] = useState("all");
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState(params.get("q") ?? "");
   const [limit, setLimit] = useState(60);
   const [message, setMessage] = useState<string | null>(null);
   const [queued, setQueued] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const next = params.get("q");
+    if (next) {
+      setFilter(next);
+    }
+  }, [params]);
 
   const visible = CORE_LEXICON.filter((row) => {
     if (topic !== "all" && row.topic !== topic) {
       return false;
     }
-    const needle = filter.trim().toLocaleLowerCase("en-US");
+    const needle = foldGerman(filter);
     if (!needle) {
       return true;
     }
-    return (
-      row.de.toLocaleLowerCase("de-DE").includes(needle) ||
-      row.en.toLocaleLowerCase("en-US").includes(needle)
-    );
+    return foldGerman(row.de).includes(needle) || foldGerman(row.en).includes(needle);
   });
 
   const mix = articleMix(topic === "all" ? CORE_LEXICON : visible);

@@ -99,7 +99,24 @@ export const lessonKindSchema = z.enum([
   "mapper",
   "builder",
   "sources",
+  "inquire",
+  "skills",
 ]);
+
+export const languageSkillSchema = z.enum(["listen", "read", "write", "speak"]);
+
+export const skillResourceSchema = z.object({
+  id: z.string().min(6).max(80),
+  skill: languageSkillSchema,
+  title: z.string().min(1).max(160),
+  url: z
+    .string()
+    .url()
+    .refine((value) => value.startsWith("https://"), "Only https: resource links are allowed."),
+  levelTag: z.string().min(1).max(24),
+  useEn: z.string().min(1).max(400),
+  localPath: z.string().max(80).optional(),
+});
 
 export const lessonSchema = z.object({
   id: z.string().min(6).max(80),
@@ -145,4 +162,6 @@ export type Lesson = z.infer<typeof lessonSchema>;
 export type RoadmapStation = z.infer<typeof roadmapStationSchema>;
 export type SourceCitation = z.infer<typeof sourceCitationSchema>;
 export type SentenceTemplate = z.infer<typeof sentenceTemplateSchema>;
+export type LanguageSkill = z.infer<typeof languageSkillSchema>;
+export type SkillResource = z.infer<typeof skillResourceSchema>;
 export type ContentStatus = z.infer<typeof contentStatusSchema>;

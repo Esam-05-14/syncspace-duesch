@@ -13,6 +13,9 @@ export {
   PHRASES,
   ROADMAP,
   SENTENCE_TEMPLATES,
+  SKILL_GUIDES,
+  SKILL_RESOURCES,
+  inquiryCorpus,
   lexiconTopics,
   validateCurriculum,
 } from "./curriculum/index.js";

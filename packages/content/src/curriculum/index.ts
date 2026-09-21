@@ -7,6 +7,7 @@ import {
   phraseSchema,
   roadmapStationSchema,
   sentenceTemplateSchema,
+  skillResourceSchema,
   sourceCitationSchema,
   type CoreLexeme,
 } from "@syncspace/contracts";
@@ -15,6 +16,7 @@ import { GRAMMAR_TOPICS } from "./grammar.js";
 import { LESSONS, ROADMAP, SENTENCE_TEMPLATES } from "./lessons.js";
 import { CORE_LEXICON } from "./lexicon.js";
 import { PHRASES } from "./phrases.js";
+import { SKILL_RESOURCES } from "./skills.js";
 import { PHONEMES } from "./sounds.js";
 import { CURRICULUM_SOURCES } from "./sources.js";
 
@@ -25,6 +27,7 @@ export { CORE_LEXICON } from "./lexicon.js";
 export { PHRASES } from "./phrases.js";
 export { PHONEMES } from "./sounds.js";
 export { CURRICULUM_SOURCES } from "./sources.js";
+export { SKILL_GUIDES, SKILL_RESOURCES } from "./skills.js";
 
 export const CURRICULUM_REVIEW =
   "All lesson records are original draft teaching material. No human German-language review has been recorded. Official Goethe and Deutsche Welle pages stay on their own sites.";
@@ -37,7 +40,20 @@ export type ValidatedCurriculum = {
   grammar: typeof GRAMMAR_TOPICS;
   lessons: typeof LESSONS;
   roadmap: typeof ROADMAP;
+  skills: typeof SKILL_RESOURCES;
 };
+
+export function inquiryCorpus() {
+  return {
+    lexemes: CORE_LEXICON,
+    phrases: PHRASES,
+    grammar: GRAMMAR_TOPICS,
+    phonemes: PHONEMES,
+    letters: ALPHABET,
+    sources: CURRICULUM_SOURCES,
+    skills: SKILL_RESOURCES,
+  };
+}
 
 export function validateCurriculum(): ValidatedCurriculum {
   const lexemes = CORE_LEXICON.map((row) => coreLexemeSchema.parse(row));
@@ -47,9 +63,10 @@ export function validateCurriculum(): ValidatedCurriculum {
   const grammar = GRAMMAR_TOPICS.map((row) => grammarTopicSchema.parse(row));
   const lessons = LESSONS.map((row) => lessonSchema.parse(row));
   const roadmap = ROADMAP.map((row) => roadmapStationSchema.parse(row));
+  const skills = SKILL_RESOURCES.map((row) => skillResourceSchema.parse(row));
   CURRICULUM_SOURCES.forEach((row) => sourceCitationSchema.parse(row));
   SENTENCE_TEMPLATES.forEach((row) => sentenceTemplateSchema.parse(row));
-  return { lexemes, phrases, letters, phonemes, grammar, lessons, roadmap };
+  return { lexemes, phrases, letters, phonemes, grammar, lessons, roadmap, skills };
 }
 
 export function lexiconTopics(): string[] {

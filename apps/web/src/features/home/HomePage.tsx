@@ -64,15 +64,18 @@ export function HomePage() {
             <article className="card">
               <h2>Lessons from scratch</h2>
               <p>
-                Alphabet, sounds, a draft core-500, phrases, grammar, an English→German map, and a
-                sentence builder. Official Goethe and DW pages stay on their own sites.
+                Alphabet, sounds, a draft core-500, inquiry, four-skill resources, and a sentence
+                builder. Official Goethe and DW pages stay on their own sites.
               </p>
               <div className="row">
                 <button type="button" onClick={() => navigate("/learn")}>
                   Open lessons
                 </button>
-                <button type="button" className="secondary" onClick={() => navigate("/learn/mapper")}>
-                  English map
+                <button type="button" className="secondary" onClick={() => navigate("/learn/inquire")}>
+                  Fast inquiry
+                </button>
+                <button type="button" className="secondary" onClick={() => navigate("/learn/skills")}>
+                  Four skills
                 </button>
               </div>
             </article>

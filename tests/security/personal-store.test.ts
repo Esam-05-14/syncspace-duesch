@@ -3,13 +3,16 @@ import "fake-indexeddb/auto";
 import { createOpaqueId, personalReviewBackupSchema } from "@syncspace/contracts";
 import {
   clearLessonProgress,
+  clearRecentInquiries,
   clearReviewHistory,
   enrollInReview,
   getLessonProgress,
   listDue,
   listEvents,
+  listRecentInquiries,
   listSchedules,
   markLessonComplete,
+  rememberInquiry,
   rateCard,
   restoreReviewBackup,
   setPersonalDatabaseNameForTests,
@@ -137,5 +140,15 @@ describe("isolated personal review stores", () => {
     const first = await markLessonComplete("lesson-alphabet");
     expect(first.completed).toEqual(["lesson-alphabet"]);
     expect((await getLessonProgress()).completed).toEqual(["lesson-alphabet"]);
+  });
+
+  it("keeps recent inquiry strings in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-inquire");
+    await clearRecentInquiries();
+    await rememberInquiry("strasse");
+    await rememberInquiry("der tisch");
+    expect(await listRecentInquiries()).toEqual(["der tisch", "strasse"]);
+    setPersonalDatabaseNameForTests("syncspace-inquire-b");
+    expect(await listRecentInquiries()).toEqual([]);
   });
 });

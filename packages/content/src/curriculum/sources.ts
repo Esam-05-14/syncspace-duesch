@@ -14,10 +14,28 @@ export const CURRICULUM_SOURCES: SourceCitation[] = [
     useEn: "Copyrighted reference for exam topics. Linked for orientation. Our core-500 is original draft teaching material, not this list.",
   },
   {
+    id: "src-goethe-a1-skills",
+    title: "Goethe-Institut: A1 Prüfungstraining (Hören, Lesen, Schreiben, Sprechen)",
+    url: "https://www.goethe.de/de/spr/prf/ueb/pa1.html",
+    useEn: "Official Start Deutsch 1 trainer for the four exam skills. Stay on the Goethe site.",
+  },
+  {
     id: "src-dw-nicos",
     title: "Deutsche Welle: Nicos Weg (A1–B1)",
     url: "https://learngerman.dw.com/en/nicos-weg/c-36519789",
     useEn: "Free video course with grammar and vocabulary pages. Study it on DW. We do not host the videos.",
+  },
+  {
+    id: "src-dw-news",
+    title: "Deutsche Welle: Deutsch lernen mit Nachrichten",
+    url: "https://learngerman.dw.com/de/deutsch-lernen-mit-nachrichten/s-66405122",
+    useEn: "News video and text on DW. Link only; we do not cache the audio.",
+  },
+  {
+    id: "src-nachrichtenleicht",
+    title: "Deutschlandfunk: Nachrichtenleicht",
+    url: "https://www.nachrichtenleicht.de/",
+    useEn: "Public easy-language news. Read it on their site.",
   },
   {
     id: "src-wiki-phonology",
