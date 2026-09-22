@@ -14,7 +14,7 @@ export function GrammarPage() {
   return (
     <>
       <p>
-        Eight first-grammar topics in English. Tables use the same draft keys as the core list.
+        Nine first-grammar topics in English. Tables use the same draft keys as the core list.
         This is not a full case course and not a CEFR grammar syllabus.
       </p>
       <WordOrderViz />

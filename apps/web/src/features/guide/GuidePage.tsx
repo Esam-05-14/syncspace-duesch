@@ -91,8 +91,9 @@ export function GuidePage() {
           not a scientific promise. Ratings never go onto the shared board.
         </p>
         <p>
-          <Link to="/learn/write">Writing drills</Link> fill a dictionary article or rebuild a
-          finite clause from the same patterns as the builder. A clean check is not a teacher mark.
+          <Link to="/learn/write">Writing drills</Link> fill a dictionary article, pick the
+          accusative form after <em>haben</em>, or rebuild a finite clause from the same patterns as
+          the builder. A clean check is not a teacher mark.
         </p>
       </section>
 

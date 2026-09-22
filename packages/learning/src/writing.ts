@@ -1,5 +1,6 @@
 import type { CoreLexeme, SentenceTemplate } from "@syncspace/contracts";
-import { buildSentence } from "./sentence-builder.js";
+import { accusativeDefinite, buildSentence } from "./sentence-builder.js";
+import { normalizeArticleAnswer } from "./normalize.js";
 
 export type ArticleFillItem = {
   id: string;
@@ -8,6 +9,19 @@ export type ArticleFillItem = {
   glossEn: string;
   article: "der" | "die" | "das";
   exampleDe: string;
+  lexemeId: string;
+};
+
+export type AccusativeFillItem = {
+  id: string;
+  kind: "accusative-fill";
+  nounDe: string;
+  glossEn: string;
+  dictionaryArticle: "der" | "die" | "das";
+  accepted: string;
+  frameDe: string;
+  expectedDe: string;
+  noteEn: string;
   lexemeId: string;
 };
 
@@ -96,6 +110,49 @@ export function pickArticleFill(input: {
       exampleDe: row.exampleDe,
       lexemeId: row.id,
     }));
+}
+
+/** Deterministic accusative blanks after haben. Only der → den changes. */
+export function pickAccusativeFill(input: {
+  lexemes: readonly CoreLexeme[];
+  day?: string;
+  limit?: number;
+}): AccusativeFillItem[] {
+  const day = input.day ?? new Date().toISOString().slice(0, 10);
+  const limit = input.limit ?? 8;
+  return input.lexemes
+    .filter((row) => row.pos === "noun" && row.article)
+    .slice()
+    .sort(
+      (left, right) =>
+        dayRank(left.id, `acc:${day}`) - dayRank(right.id, `acc:${day}`) || left.de.localeCompare(right.de, "de"),
+    )
+    .slice(0, limit)
+    .map((row) => {
+      const accepted = accusativeDefinite(row.article!);
+      return {
+        id: `acc:${row.id}`,
+        kind: "accusative-fill" as const,
+        nounDe: row.de,
+        glossEn: row.en,
+        dictionaryArticle: row.article!,
+        accepted,
+        frameDe: `Ich habe ___ ${row.de}.`,
+        expectedDe: `Ich habe ${accepted} ${row.de}.`,
+        noteEn: "After haben the noun is accusative. Only masculine der becomes den.",
+        lexemeId: row.id,
+      };
+    });
+}
+
+export function checkAccusativeForm(raw: string, accepted: string): {
+  ok: boolean;
+  submitted: string;
+  accepted: string;
+} {
+  const submitted = normalizeArticleAnswer(raw);
+  const expected = normalizeArticleAnswer(accepted);
+  return { ok: submitted === expected, submitted, accepted: expected };
 }
 
 /** Deterministic word-order items from finite sentence patterns. */

@@ -39,7 +39,7 @@ describe("solo curriculum", () => {
     expect(PHRASES.every((row) => row.contentStatus === "draft")).toBe(true);
     expect(curriculum.letters).toHaveLength(30);
     expect(curriculum.roadmap).toHaveLength(10);
-    expect(curriculum.grammar).toHaveLength(8);
+    expect(curriculum.grammar).toHaveLength(9);
   });
 
   it("lists https resources for all four skills", () => {

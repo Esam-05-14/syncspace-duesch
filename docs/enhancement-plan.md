@@ -68,6 +68,8 @@ Do not copy the Goethe Wortliste. Do not host exam audio. Do not treat LanguageT
 
 **Release promise:** more local material. Draft status unchanged.
 
+Shipped in-tree: more draft phrases (weather, home, phone, class, time), a weil/dass first-look grammar topic, and accusative fill after *haben* on `/learn/write`. All new records stay draft.
+
 ### Wave 4 — Hardening
 
 Invitation rotate UI, schema `1.x` migrations with a recovery screen for unsupported majors, three-client qualification.

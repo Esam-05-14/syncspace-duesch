@@ -25,7 +25,7 @@ When time is tight, extra exercise modes and canvas decoration drop first. Offli
 | `/learn/drill` daily cover set | Deterministic mix; due nouns first | Ratings only if the word is already queued |
 | `/learn/lectures` one note per video or class | Personal IndexedDB; YouTube/Vimeo embed | Other class pages open in a new tab |
 | LanguageTool `de-DE` check | User-started public API after consent | Free, no key; text leaves this device; not a human review |
-| `/learn/write` article fill + word order | Deterministic from the authored corpus | Not a teacher mark; not a Goethe paper |
+| `/learn/write` article fill, accusative, word order | Deterministic from the authored corpus | Not a teacher mark; not a Goethe paper |
 | Human review of German | Not recorded | Starter and core-500 stay draft |
 | Vercel static website | `vercel.json` builds `@syncspace/web` | No sync server; no loopback default in production |
 
@@ -35,4 +35,5 @@ When time is tight, extra exercise modes and canvas decoration drop first. Offli
 | --- | --- | --- |
 | 0 — Honesty | Walk documented; production SW registered; Node two-client and checkpoint tests still green | Browser two-profile walk and production offline reload are still human steps (`docs/wave-0-walk.md`) |
 | 1 — Study loop | LWW losing draft, stacked mobile canvas, export reminder, writing drills | Still draft German. Still not a CEFR path. |
-| 2–5 | Not started | Hosting needs an ADR. Do not sneak AI or Goethe copy into an earlier wave. |
+| 3 — More practice | Extra draft phrases; weil/dass first look; accusative fill after haben | Still draft. Still not a Goethe list. |
+| 2, 4–5 | Not started | Hosting needs an ADR. Do not sneak AI or Goethe copy into an earlier wave. |

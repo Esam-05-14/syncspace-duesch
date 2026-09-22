@@ -1,11 +1,19 @@
 import { CORE_LEXICON, SENTENCE_TEMPLATES } from "@syncspace/content";
-import { checkArticleRecall, checkWordOrder, pickArticleFill, pickWordOrder } from "@syncspace/learning";
+import {
+  checkAccusativeForm,
+  checkArticleRecall,
+  checkWordOrder,
+  pickAccusativeFill,
+  pickArticleFill,
+  pickWordOrder,
+} from "@syncspace/learning";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArticleBadge } from "../ArticleBadge.js";
 import { SpeakButton } from "../SpeakButton.js";
 
 const ARTICLES = ["der", "die", "das"] as const;
+const ACCUSATIVE = ["den", "die", "das"] as const;
 
 function takeOnce(tokens: readonly string[], used: readonly string[]): string[] {
   const remaining = [...used];
@@ -21,7 +29,7 @@ function takeOnce(tokens: readonly string[], used: readonly string[]): string[] 
 
 export function WritePage() {
   const day = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const [mode, setMode] = useState<"article-fill" | "word-order">("article-fill");
+  const [mode, setMode] = useState<"article-fill" | "accusative-fill" | "word-order">("article-fill");
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [articleOk, setArticleOk] = useState<boolean | null>(null);
@@ -29,12 +37,14 @@ export function WritePage() {
   const [orderCheck, setOrderCheck] = useState<ReturnType<typeof checkWordOrder> | null>(null);
 
   const fills = useMemo(() => pickArticleFill({ lexemes: CORE_LEXICON, day }), [day]);
+  const accusatives = useMemo(() => pickAccusativeFill({ lexemes: CORE_LEXICON, day }), [day]);
   const orders = useMemo(
     () => pickWordOrder({ lexemes: CORE_LEXICON, templates: SENTENCE_TEMPLATES, day }),
     [day],
   );
 
   const fill = fills[index % Math.max(fills.length, 1)];
+  const accusative = accusatives[index % Math.max(accusatives.length, 1)];
   const order = orders[index % Math.max(orders.length, 1)];
   const unused = order ? takeOnce(order.tokens, picked) : [];
 
@@ -46,10 +56,18 @@ export function WritePage() {
   }, [mode, index]);
 
   function gradeArticle(article: (typeof ARTICLES)[number]) {
-    if (!fill || revealed) {
+    if (!fill || revealed || mode !== "article-fill") {
       return;
     }
     setArticleOk(checkArticleRecall(article, fill.article).ok);
+    setRevealed(true);
+  }
+
+  function gradeAccusative(form: (typeof ACCUSATIVE)[number]) {
+    if (!accusative || revealed || mode !== "accusative-fill") {
+      return;
+    }
+    setArticleOk(checkAccusativeForm(form, accusative.accepted).ok);
     setRevealed(true);
   }
 
@@ -62,15 +80,25 @@ export function WritePage() {
           return;
         }
       }
-      if (mode !== "article-fill" || revealed) {
+      if (revealed) {
         return;
       }
-      if (event.key === "1") {
-        gradeArticle("der");
-      } else if (event.key === "2") {
-        gradeArticle("die");
-      } else if (event.key === "3") {
-        gradeArticle("das");
+      if (mode === "article-fill") {
+        if (event.key === "1") {
+          gradeArticle("der");
+        } else if (event.key === "2") {
+          gradeArticle("die");
+        } else if (event.key === "3") {
+          gradeArticle("das");
+        }
+      } else if (mode === "accusative-fill") {
+        if (event.key === "1") {
+          gradeAccusative("den");
+        } else if (event.key === "2") {
+          gradeAccusative("die");
+        } else if (event.key === "3") {
+          gradeAccusative("das");
+        }
       }
     }
     window.addEventListener("keydown", onKey);
@@ -81,11 +109,11 @@ export function WritePage() {
     <>
       <p>
         Finite writing drills from the authored list. Article fill is dictionary gender, not case.
-        Word order uses the same sentence patterns as the builder. This is not a teacher mark and
-        not a Goethe writing paper.
+        Accusative fill is only after <em>haben</em>: der becomes den. Word order uses the same
+        sentence patterns as the builder. This is not a teacher mark and not a Goethe writing paper.
       </p>
       <p className="meta">
-        {day} · 1 der · 2 die · 3 das · <Link to="/learn/builder">Open the builder</Link>
+        {day} · 1 / 2 / 3 pick the form · <Link to="/learn/builder">Open the builder</Link>
       </p>
       <div className="row">
         <button
@@ -97,6 +125,16 @@ export function WritePage() {
           }}
         >
           Article fill
+        </button>
+        <button
+          type="button"
+          className={mode === "accusative-fill" ? undefined : "secondary"}
+          onClick={() => {
+            setMode("accusative-fill");
+            setIndex(0);
+          }}
+        >
+          Accusative
         </button>
         <button
           type="button"
@@ -133,6 +171,40 @@ export function WritePage() {
               </p>
               <p className="meta">{fill.exampleDe}</p>
               <SpeakButton text={`${fill.article} ${fill.nounDe}`} label="Speak" />
+            </section>
+          )}
+          <div className="row" style={{ marginTop: "0.75rem" }}>
+            <button type="button" onClick={() => setIndex((value) => value + 1)}>
+              Next
+            </button>
+          </div>
+        </article>
+      ) : null}
+
+      {mode === "accusative-fill" && accusative ? (
+        <article className="card drill-card">
+          <p className="meta">
+            Card {(index % accusatives.length) + 1} of {accusatives.length} · dictionary{" "}
+            {accusative.dictionaryArticle} {accusative.nounDe}
+          </p>
+          <h2 className="drill-front">{accusative.frameDe}</h2>
+          <p className="meta">{accusative.glossEn}</p>
+          {!revealed ? (
+            <div className="row">
+              {ACCUSATIVE.map((form) => (
+                <button key={form} type="button" className="secondary" onClick={() => gradeAccusative(form)}>
+                  {form}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <section className="drill-back">
+              <p>{articleOk ? "Matches the authored accusative form." : "Not the authored accusative form."}</p>
+              <p>
+                <strong>{accusative.expectedDe}</strong>
+              </p>
+              <p className="meta">{accusative.noteEn}</p>
+              <SpeakButton text={accusative.expectedDe} label="Speak" />
             </section>
           )}
           <div className="row" style={{ marginTop: "0.75rem" }}>

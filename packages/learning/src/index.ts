@@ -41,11 +41,14 @@ export {
 } from "./inquire.js";
 export { pickDrillSession, type DrillItem } from "./drill.js";
 export {
+  checkAccusativeForm,
   checkWordOrder,
+  pickAccusativeFill,
   pickArticleFill,
   pickWordOrder,
   shuffleDeterministic,
   tokenizeGermanSentence,
+  type AccusativeFillItem,
   type ArticleFillItem,
   type WordOrderItem,
 } from "./writing.js";

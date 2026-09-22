@@ -173,4 +173,25 @@ export const GRAMMAR_TOPICS: GrammarTopic[] = [
     exampleDe: "Ich stehe um sieben Uhr auf.",
     exampleEn: "I get up at seven o'clock.",
   },
+  {
+    id: "gram-weil",
+    titleEn: "weil and dass: verb to the end (first look)",
+    summaryEn: "In a weil or dass clause the finite verb moves to the end. This is a classroom pair, not a full subordinate-clause course.",
+    pointsEn: [
+      "Ich lerne Deutsch, weil ich in Berlin wohne. The verb wohne is last in the weil-clause.",
+      "Ich glaube, dass der Zug pünktlich ist. The verb ist is last after dass.",
+      "German normally writes a comma before weil and dass.",
+      "Do not invert the main clause just because a weil-clause follows it.",
+    ],
+    table: {
+      headers: ["Main clause", "weil / dass clause"],
+      rows: [
+        ["Ich bleibe hier,", "weil ich müde bin."],
+        ["Wir gehen,", "weil der Laden zu ist."],
+        ["Ich denke,", "dass das Buch gut ist."],
+      ],
+    },
+    exampleDe: "Ich lerne Deutsch, weil ich in Berlin wohne.",
+    exampleEn: "I am learning German because I live in Berlin.",
+  },
 ];

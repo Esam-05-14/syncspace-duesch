@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { CORE_LEXICON, SENTENCE_TEMPLATES } from "@syncspace/content";
 import {
+  checkAccusativeForm,
   checkWordOrder,
+  pickAccusativeFill,
   pickArticleFill,
   pickWordOrder,
   shuffleDeterministic,
@@ -42,6 +44,23 @@ describe("writing drills", () => {
     expect(first.map((row) => row.id)).toEqual(second.map((row) => row.id));
     expect(first.every((row) => row.tokens.length === row.expected.length)).toBe(true);
     expect(first.every((row) => checkWordOrder(row.expected, row.expected).ok)).toBe(true);
+  });
+
+  it("picks a deterministic accusative-fill set after haben", () => {
+    const first = pickAccusativeFill({ lexemes: CORE_LEXICON, day: "2026-09-22" });
+    const second = pickAccusativeFill({ lexemes: CORE_LEXICON, day: "2026-09-22" });
+    expect(first).toHaveLength(8);
+    expect(first.map((row) => row.id)).toEqual(second.map((row) => row.id));
+    const masculine = first.find((row) => row.dictionaryArticle === "der");
+    expect(masculine?.accepted).toBe("den");
+    expect(masculine?.expectedDe).toBe(`Ich habe den ${masculine?.nounDe}.`);
+    const tisch = CORE_LEXICON.find((row) => row.de === "Tisch");
+    expect(tisch).toBeTruthy();
+    expect(
+      pickAccusativeFill({ lexemes: [tisch!], day: "2026-09-22", limit: 1 })[0]?.expectedDe,
+    ).toBe("Ich habe den Tisch.");
+    expect(checkAccusativeForm("den", "den").ok).toBe(true);
+    expect(checkAccusativeForm("der", "den").ok).toBe(false);
   });
 
   it("shuffles with a stable seed", () => {
