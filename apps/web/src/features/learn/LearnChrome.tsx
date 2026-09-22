@@ -14,6 +14,7 @@ const PATH = [
 
 const TOOLS = [
   { to: "/learn/drill", label: "Cover drill" },
+  { to: "/learn/write", label: "Writing" },
   { to: "/learn/inquire", label: "Inquire" },
   { to: "/learn/mapper", label: "Mapper" },
   { to: "/learn/builder", label: "Builder" },

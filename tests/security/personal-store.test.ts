@@ -7,10 +7,9 @@ import {
   clearReviewHistory,
   enrollInReview,
   createLecture,
-  getDudenApiKey,
   getLanguageToolConsent,
-  hasDudenApiKey,
   getLastLesson,
+  getReviewExportAt,
   getLecture,
   getLessonProgress,
   listLectures,
@@ -21,7 +20,7 @@ import {
   markLessonComplete,
   rememberInquiry,
   rememberLastLesson,
-  setDudenApiKey,
+  rememberReviewExport,
   setLanguageToolConsent,
   rateCard,
   restoreReviewBackup,
@@ -185,6 +184,16 @@ describe("isolated personal review stores", () => {
     expect(await listLectures()).toEqual([]);
   });
 
+  it("records a private-review export time in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-export-at");
+    expect(await getReviewExportAt()).toBeNull();
+    const stamped = await rememberReviewExport(new Date("2026-09-22T12:00:00.000Z"));
+    expect(stamped).toBe("2026-09-22T12:00:00.000Z");
+    expect(await getReviewExportAt()).toBe("2026-09-22T12:00:00.000Z");
+    setPersonalDatabaseNameForTests("syncspace-export-at-b");
+    expect(await getReviewExportAt()).toBeNull();
+  });
+
   it("stores LanguageTool consent in this profile only", async () => {
     setPersonalDatabaseNameForTests("syncspace-lt-consent");
     expect(await getLanguageToolConsent()).toBe(false);
@@ -192,15 +201,5 @@ describe("isolated personal review stores", () => {
     expect(await getLanguageToolConsent()).toBe(true);
     setPersonalDatabaseNameForTests("syncspace-lt-consent-b");
     expect(await getLanguageToolConsent()).toBe(false);
-  });
-
-  it("stores a Duden API key in this profile only", async () => {
-    setPersonalDatabaseNameForTests("syncspace-duden-key");
-    expect(await hasDudenApiKey()).toBe(false);
-    await setDudenApiKey("duden-test-key-ok");
-    expect(await getDudenApiKey()).toBe("duden-test-key-ok");
-    await expect(setDudenApiKey("short")).rejects.toThrow(/does not look like/);
-    setPersonalDatabaseNameForTests("syncspace-duden-key-b");
-    expect(await getDudenApiKey()).toBeNull();
   });
 });

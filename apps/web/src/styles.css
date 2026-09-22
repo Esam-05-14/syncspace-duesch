@@ -286,7 +286,33 @@ th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(
 .proofread .card { margin: 0.55rem 0; }
 textarea { min-height: 8rem; resize: vertical; }
 
+.token-bank, .token-answer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.65rem 0;
+}
+.token-bank button, .token-answer button {
+  border-radius: 10px;
+}
+.board-editors { margin-top: 1rem; }
+.offline-banner { margin: 0; border-radius: 0; }
+
 @media (max-width: 720px) {
   .page { width: calc(100% - 1.2rem); }
-  .canvas { display: none; }
+  .canvas {
+    min-height: 0;
+    padding: 0.65rem;
+    background: var(--card);
+  }
+  .canvas-card {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100%;
+    margin: 0 0 0.6rem;
+  }
+  .inquire-bar, .inquire-form {
+    grid-template-columns: 1fr;
+  }
 }

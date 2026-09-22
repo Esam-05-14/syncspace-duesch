@@ -15,3 +15,4 @@ export {
   upsertVocabulary,
 } from "./document.js";
 export { materializeBoard, materializeDigest } from "./materialize.js";
+export { detectLostLexicalDraft, lexicalJson, type LostLexicalDraft } from "./lexical-conflict.js";

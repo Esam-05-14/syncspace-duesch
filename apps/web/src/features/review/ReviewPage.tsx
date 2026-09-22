@@ -124,6 +124,7 @@ export function ReviewPage() {
           <div className="row">
             <Link to="/learn/words">Core 500</Link>
             <Link to="/learn/drill">Cover drill</Link>
+            <Link to="/learn/write">Writing drills</Link>
             <Link to="/">Boards</Link>
           </div>
         </article>

@@ -10,10 +10,8 @@ import type { MaterializedBoard, SyncEvent } from "@syncspace/contracts";
 import * as Y from "yjs";
 import { IndexeddbPersistence } from "y-indexeddb";
 import { createSyncEvent, pushEvent } from "./sync-log.js";
+import { viteSyncEndpoints } from "./sync-endpoints.js";
 import { getToken, setToken } from "./tokens.js";
-
-const SYNC_WS = import.meta.env.VITE_SYNC_WS ?? "ws://127.0.0.1:4357";
-const SYNC_HTTP = import.meta.env.VITE_SYNC_HTTP ?? "http://127.0.0.1:4357";
 
 export type SessionStatus = {
   localRestore: boolean;
@@ -171,8 +169,17 @@ export async function openBoardSession(input: {
 }
 
 function attachProvider(session: BoardSession, boardId: string, token: string): void {
+  const { ws } = viteSyncEndpoints();
+  if (!ws) {
+    note(
+      session,
+      "connection-lost",
+      "No remote sync URL on this host. The board stays saved on this device.",
+    );
+    return;
+  }
   const provider = new HocuspocusProvider({
-    url: SYNC_WS,
+    url: ws,
     name: boardId,
     document: session.doc,
     token,
@@ -222,13 +229,14 @@ function attachProvider(session: BoardSession, boardId: string, token: string): 
 const checkpointWatches = new Set<string>();
 
 function watchCheckpoints(session: BoardSession, boardId: string): void {
-  if (checkpointWatches.has(boardId) || typeof window === "undefined") {
+  const { http } = viteSyncEndpoints();
+  if (!http || checkpointWatches.has(boardId) || typeof window === "undefined") {
     return;
   }
   checkpointWatches.add(boardId);
   const tick = async () => {
     try {
-      const response = await fetch(`${SYNC_HTTP}/dev/snapshot/${boardId}`);
+      const response = await fetch(`${http}/dev/snapshot/${boardId}`);
       if (!response.ok) {
         return;
       }

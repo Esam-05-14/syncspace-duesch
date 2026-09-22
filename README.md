@@ -4,7 +4,7 @@ Offline-first collaborative German study workspace. A small group builds **share
 
 This is ordinary software, not an AI wrapper. Shared editing, persistence, finite-answer checking, review scheduling, and sync diagnostics work without a language-model API. [Yjs](https://docs.yjs.dev) supplies merge mechanics; this repository supplies the learning model, shared/private split, recovery, authorization, interface, and tests.
 
-**Status:** first slice in development. Not a hosted classroom product.
+**Status:** first slice plus a public **website** on Vercel. Not a hosted classroom product. Partner sync stays loopback until a later host exists. See `docs/deploy-vercel.md`.
 
 ## What you can do in this slice
 
@@ -49,7 +49,7 @@ Awareness is presence only. Grades, answers, due dates, and room tokens do not b
 - A checkpoint receipt describes that checkpoint, not every later keystroke.
 - Browser storage can be evicted. Private review dies with the profile unless exported.
 - Debounced checkpoints have a crash window. We surface the recovered sequence; we do not claim zero data loss.
-- Loopback is not a study-partner URL. A static host cannot run the sync server.
+- Loopback is not a study-partner URL. Vercel hosts the website only. A static host cannot run the sync server.
 - Capability token ≠ identity. Anyone with the token is an editor.
 - Shared boards are readable by participants and the server operator. This design is **not** end-to-end encrypted.
 

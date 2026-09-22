@@ -18,3 +18,4 @@ apps/web/test-results/
 data/
 tmp/
 .syncspace/
+.vercel/

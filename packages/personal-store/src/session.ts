@@ -2,8 +2,7 @@ import { openPersonalDb } from "./db.js";
 
 const LAST_LESSON_KEY = "last-lesson";
 const LANGUAGE_TOOL_CONSENT_KEY = "languagetool-consent";
-const DUDEN_API_KEY = "duden-api-key";
-const DUDEN_KEY_MAX = 256;
+const REVIEW_EXPORT_AT_KEY = "review-export-at";
 
 function isLessonPath(path: string): boolean {
   return path.startsWith("/learn");
@@ -41,26 +40,15 @@ export async function setLanguageToolConsent(allowed: boolean): Promise<void> {
   await db.delete("settings", LANGUAGE_TOOL_CONSENT_KEY);
 }
 
-export async function getDudenApiKey(): Promise<string | null> {
+export async function getReviewExportAt(): Promise<string | null> {
   const db = await openPersonalDb();
-  const row = await db.get("settings", DUDEN_API_KEY);
-  return row?.value?.trim() || null;
+  const row = await db.get("settings", REVIEW_EXPORT_AT_KEY);
+  return row?.value ?? null;
 }
 
-export async function hasDudenApiKey(): Promise<boolean> {
-  return (await getDudenApiKey()) !== null;
-}
-
-export async function setDudenApiKey(raw: string): Promise<void> {
-  const value = raw.trim();
-  if (value.length < 8 || value.length > DUDEN_KEY_MAX || /\s/.test(value)) {
-    throw new Error("That does not look like a Duden API key.");
-  }
+export async function rememberReviewExport(at = new Date()): Promise<string> {
+  const value = at.toISOString();
   const db = await openPersonalDb();
-  await db.put("settings", { key: DUDEN_API_KEY, value });
-}
-
-export async function clearDudenApiKey(): Promise<void> {
-  const db = await openPersonalDb();
-  await db.delete("settings", DUDEN_API_KEY);
+  await db.put("settings", { key: REVIEW_EXPORT_AT_KEY, value });
+  return value;
 }

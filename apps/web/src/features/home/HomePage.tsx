@@ -4,9 +4,8 @@ import { describeDue } from "@syncspace/learning";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { nextOpenStation, pathForLesson } from "../learn/stations.js";
+import { viteSyncEndpoints } from "../../lib/sync-endpoints.js";
 import { setToken } from "../../lib/tokens.js";
-
-const SYNC_HTTP = import.meta.env.VITE_SYNC_HTTP ?? "http://127.0.0.1:4357";
 
 type BoardRow = { id: string; title: string; kind: string; updatedAt: string };
 
@@ -40,8 +39,13 @@ export function HomePage() {
 
   async function openSample() {
     setJoinError(null);
+    const { http } = viteSyncEndpoints();
+    if (!http) {
+      setJoinError("This public website does not run the sync server. Open a local board, or run npm run dev on loopback for a partner room.");
+      return;
+    }
     try {
-      const response = await fetch(`${SYNC_HTTP}/dev/sample-room`);
+      const response = await fetch(`${http}/dev/sample-room`);
       if (!response.ok) {
         throw new Error("The development join helper is not available. Is the sync server running on loopback?");
       }
@@ -75,7 +79,8 @@ export function HomePage() {
         <h1>Study on this device. Keep ratings private.</h1>
         <p className="lede">
           A local lesson board and a private Again / Got it queue are enough for one learner. Partner
-          sync is optional. Starter German is draft teaching material, not a reviewed curriculum.
+          sync is optional. Starter German is draft teaching material, not a reviewed curriculum.{" "}
+          <Link to="/guide">How to use this</Link>.
         </p>
       </section>
 
@@ -95,6 +100,9 @@ export function HomePage() {
           <button type="button" className="secondary" onClick={() => navigate("/learn/drill")}>
             Cover drill
           </button>
+          <button type="button" className="secondary" onClick={() => navigate("/learn/write")}>
+            Writing drills
+          </button>
         </div>
       </section>
 
@@ -112,12 +120,15 @@ export function HomePage() {
             <button type="button" className="secondary" onClick={() => navigate("/learn/inquire")}>
               Fast inquiry
             </button>
-                <button type="button" className="secondary" onClick={() => navigate("/learn/skills")}>
-                  Four skills
-                </button>
-                <button type="button" className="secondary" onClick={() => navigate("/learn/lectures")}>
-                  Lecture notes
-                </button>
+            <button type="button" className="secondary" onClick={() => navigate("/learn/write")}>
+              Writing
+            </button>
+            <button type="button" className="secondary" onClick={() => navigate("/learn/skills")}>
+              Four skills
+            </button>
+            <button type="button" className="secondary" onClick={() => navigate("/learn/lectures")}>
+              Lecture notes
+            </button>
           </div>
         </article>
         <article className="card">
@@ -158,7 +169,10 @@ export function HomePage() {
         </article>
         <article className="card">
           <h2>Study with a partner</h2>
-          <p>Open the server-seeded A1–B1 board. Needs the sync process on loopback. The invitation is generated at runtime and is not in git.</p>
+          <p>
+            Open the server-seeded A1–B1 board. Needs a running sync process. The public website does
+            not include that process. The invitation is generated at runtime and is not in git.
+          </p>
           <button type="button" className="secondary" onClick={() => void openSample()}>
             Open {SAMPLE_ROOM_ID}
           </button>

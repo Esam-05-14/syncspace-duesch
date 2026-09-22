@@ -68,7 +68,7 @@ export const SKILL_RESOURCES: SkillResource[] = [
     url: "https://www.goethe.de/de/spr/prf/ueb/pa1.html",
     levelTag: "A1",
     useEn: "Form-filling and a short message in the official A1 set. Write on paper or in the Goethe trainer.",
-    localPath: "/learn/builder",
+    localPath: "/learn/write",
   },
   {
     id: "sk-write-builder",
@@ -122,7 +122,7 @@ export const SKILL_GUIDES = {
   write: {
     titleEn: "Writing",
     summaryEn: "Produce a finite clause here, then try an official form or short message on Goethe.",
-    localEn: "Use the sentence builder so the article and accusative stay consistent.",
+    localEn: "Use writing drills and the sentence builder so the article and word order stay consistent.",
   },
   speak: {
     titleEn: "Speaking",

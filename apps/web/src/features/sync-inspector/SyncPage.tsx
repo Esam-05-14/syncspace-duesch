@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { simulateDisconnect, simulateReconnect } from "../../lib/board-session.js";
+import { viteSyncEndpoints } from "../../lib/sync-endpoints.js";
 import { useBoard } from "../../lib/use-board.js";
-
-const SYNC_HTTP = import.meta.env.VITE_SYNC_HTTP ?? "http://127.0.0.1:4357";
 
 type Receipt = {
   documentId: string;
@@ -23,7 +22,11 @@ export function SyncPage() {
     let cancelled = false;
     async function load() {
       try {
-        const response = await fetch(`${SYNC_HTTP}/dev/snapshot/${id}`);
+        const { http } = viteSyncEndpoints();
+        if (!http) {
+          return;
+        }
+        const response = await fetch(`${http}/dev/snapshot/${id}`);
         if (!response.ok) {
           return;
         }

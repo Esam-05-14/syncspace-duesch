@@ -10,29 +10,26 @@ A learner opens a YouTube clip or an online class and wants a separate note for 
 
 1. **Shared board cards** — would change the collaborative schema and mix private class notes with the partner board.
 2. **Copy exam audio or host video** — rejected.
-3. **Personal lecture notes + Duden (optional key) + LanguageTool fallback** — chosen.
+3. **Personal lecture notes + LanguageTool public API** — chosen.
 
 ## What this is not
 
 - Not a YouTube clone. We parse the URL and embed with `youtube-nocookie` or Vimeo’s player. Other class pages stay a new-tab link.
 - Not shared-board state. Notes live in this profile’s IndexedDB (`lectures` store, personal DB version 2).
-- Not a human German review. Duden and LanguageTool suggestions stay suggestions.
+- Not a human German review. LanguageTool suggestions stay suggestions.
 - Not guaranteed German. Do not treat a clean check as “you wrote B1 German”.
 
 ## German check
 
-Best option with a free-to-get key: [Duden API](https://www.duden.de/api) `POST https://api.duden.de/v1/spellcheck` with `x-api-key` and `language=de`. Official German spelling, grammar, and punctuation. The site lists an API Free package (about 20 checks/day). The key stays in this profile’s IndexedDB. It is never committed, exported, or written to Yjs.
+The checker is [LanguageTool](https://languagetool.org) `POST https://api.languagetool.org/v2/check` with `language=de-DE`. It needs no key and no paid plan.
 
-Fallback without a key: [LanguageTool](https://languagetool.org) `POST https://api.languagetool.org/v2/check` with `language=de-DE`.
-
-Not used: LanguageTool Premium / Proofreading API (paid), DeepL Write (no free public write API), TextGears (weaker German), Bing Spell Check (spelling only).
+Not used: Duden API (paid packages start around €40/month), LanguageTool Premium, DeepL Write, TextGears, Bing Spell Check.
 
 Rules we follow:
 
 - User-started only. No check on every keystroke.
 - Consent checkbox before any text leaves this device.
-- Visible link to languagetool.org when that public API is used (required).
-- Visible link to duden.de when a Duden key is present.
+- Visible link to languagetool.org (required by their public API).
 - 20 000 character cap. A 429 is shown as a wait, not a local save failure.
 
 ## Security

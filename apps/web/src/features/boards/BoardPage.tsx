@@ -1,6 +1,16 @@
-import { contentHash, createOpaqueId, type LexicalValue } from "@syncspace/contracts";
-import { getNoteText, tombstoneCard, upsertExercise, upsertNote, upsertResource, upsertVocabulary } from "@syncspace/collab";
-import { useMemo, useState } from "react";
+import { contentHash, createOpaqueId, type LexicalValue, type VocabularyCard } from "@syncspace/contracts";
+import {
+  detectLostLexicalDraft,
+  getNoteText,
+  lexicalJson,
+  tombstoneCard,
+  upsertExercise,
+  upsertNote,
+  upsertResource,
+  upsertVocabulary,
+  type LostLexicalDraft,
+} from "@syncspace/collab";
+import { useEffect, useMemo, useState } from "react";
 import { NoteEditor } from "../../components/NoteEditor.js";
 import { useBoardContext } from "./board-context.js";
 
@@ -14,13 +24,23 @@ const emptyLexical: LexicalValue = {
   tags: [],
 };
 
+function preparedLexical(value: LexicalValue): LexicalValue {
+  return {
+    ...value,
+    plural: value.partOfSpeech === "noun" ? value.plural : null,
+    article: value.partOfSpeech === "noun" ? value.article : null,
+  };
+}
+
 export function BoardPage() {
   const { boardId, session, board } = useBoardContext();
   const [view, setView] = useState<"list" | "canvas">("list");
   const [lexical, setLexical] = useState<LexicalValue>(emptyLexical);
   const [noteTitle, setNoteTitle] = useState("Neue Notiz");
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
-  const [conflictDraft, setConflictDraft] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [baselineJson, setBaselineJson] = useState<string | null>(null);
+  const [conflict, setConflict] = useState<LostLexicalDraft | null>(null);
 
   const notes = board?.cards.filter((card) => card.type === "note") ?? [];
   const ytext = useMemo(() => {
@@ -30,30 +50,49 @@ export function BoardPage() {
     return getNoteText(session.doc, selectedNote);
   }, [session, selectedNote, board]);
 
+  useEffect(() => {
+    if (!board || !editingId || !baselineJson) {
+      return;
+    }
+    const card = board.cards.find((row) => row.id === editingId);
+    const lost = detectLostLexicalDraft({
+      baselineJson,
+      localForm: preparedLexical(lexical),
+      remoteLexical: card && card.type === "vocabulary" ? card.lexical : null,
+    });
+    if (!lost) {
+      return;
+    }
+    setConflict(lost);
+    if (lost.kind === "lww") {
+      setBaselineJson(lexicalJson(lost.remoteAccepted));
+    }
+  }, [board, editingId, baselineJson, lexical]);
+
+  function beginEdit(card: VocabularyCard) {
+    setEditingId(card.id);
+    setLexical(card.lexical);
+    setBaselineJson(lexicalJson(card.lexical));
+    setConflict(null);
+  }
+
+  function clearEditor() {
+    setEditingId(null);
+    setLexical(emptyLexical);
+    setBaselineJson(null);
+    setConflict(null);
+  }
+
   function addVocabulary() {
     if (!session || !lexical.headword.trim()) {
       return;
     }
-    const previous = board?.cards.find((card) => card.type === "vocabulary" && card.lexical.headword === lexical.headword);
-    try {
-      upsertVocabulary(session.doc, {
-        lexical: {
-          ...lexical,
-          plural: lexical.partOfSpeech === "noun" ? lexical.plural : null,
-          article: lexical.partOfSpeech === "noun" ? lexical.article : null,
-        },
-      });
-      if (previous && previous.type === "vocabulary") {
-        const prev = JSON.stringify(previous.lexical);
-        const next = JSON.stringify(lexical);
-        if (prev !== next) {
-          setConflictDraft(prev);
-        }
-      }
-      setLexical(emptyLexical);
-    } catch (error) {
-      setConflictDraft(error instanceof Error ? error.message : "Save failed");
-    }
+    const next = preparedLexical(lexical);
+    upsertVocabulary(session.doc, {
+      id: editingId ?? undefined,
+      lexical: next,
+    });
+    clearEditor();
   }
 
   function addNote() {
@@ -98,6 +137,15 @@ export function BoardPage() {
     });
   }
 
+  function loadAccepted() {
+    if (conflict?.kind !== "lww") {
+      return;
+    }
+    setLexical(conflict.remoteAccepted);
+    setBaselineJson(lexicalJson(conflict.remoteAccepted));
+    setConflict(null);
+  }
+
   return (
     <>
       <div className="row">
@@ -108,19 +156,41 @@ export function BoardPage() {
           Canvas
         </button>
       </div>
-      {conflictDraft ? (
+      <p className="meta">
+        List is the editing surface on a narrow screen. Canvas stacks cards under 720px; it is not a
+        mobile redesign.
+      </p>
+      {conflict?.kind === "lww" ? (
         <div className="banner">
-          Concurrent vocabulary saves keep one atomic JSON value. A losing local draft is kept here so
-          you can copy and compare: <code>{conflictDraft}</code>
-          <button type="button" className="secondary" onClick={() => setConflictDraft(null)}>
-            Dismiss
-          </button>
+          Simultaneous vocabulary saves keep one atomic JSON value. This tab’s form lost. A short-lived
+          local draft is still in the fields so you can copy it. Accepted value:{" "}
+          <code>{lexicalJson(conflict.remoteAccepted)}</code>
+          <div className="row" style={{ marginTop: "0.5rem" }}>
+            <button type="button" className="secondary" onClick={loadAccepted}>
+              Load accepted value
+            </button>
+            <button type="button" className="secondary" onClick={() => setConflict(null)}>
+              Keep my draft in the form
+            </button>
+          </div>
+        </div>
+      ) : null}
+      {conflict?.kind === "tombstone" ? (
+        <div className="banner">
+          A delete won. The card stays gone. This form is a local draft only. Undo would create a new
+          card, not resurrect the old id.
+          <div className="row" style={{ marginTop: "0.5rem" }}>
+            <button type="button" className="secondary" onClick={clearEditor}>
+              Dismiss draft
+            </button>
+          </div>
         </div>
       ) : null}
 
-      <section className="cards" style={{ marginTop: "1rem" }}>
+      <section className="cards board-editors">
         <article className="card">
-          <h2>Add vocabulary</h2>
+          <h2>{editingId ? "Edit vocabulary" : "Add vocabulary"}</h2>
+          {editingId ? <p className="meta">Editing {editingId}. Last-writer-wins on this lexical JSON.</p> : null}
           <label>
             Part of speech
             <select
@@ -187,8 +257,13 @@ export function BoardPage() {
           </label>
           <div className="row" style={{ marginTop: "0.6rem" }}>
             <button type="button" onClick={addVocabulary}>
-              Save lexical tuple
+              {editingId ? "Save this card" : "Save lexical tuple"}
             </button>
+            {editingId ? (
+              <button type="button" className="secondary" onClick={clearEditor}>
+                Cancel edit
+              </button>
+            ) : null}
             <button type="button" className="secondary" onClick={addArticleExercise}>
               Add article exercise
             </button>
@@ -258,13 +333,20 @@ export function BoardPage() {
                     <span className="badge draft">{card.contentStatus}</span>
                   </td>
                   <td>
-                    <button
-                      type="button"
-                      className="secondary"
-                      onClick={() => session && tombstoneCard(session.doc, card.id)}
-                    >
-                      Delete
-                    </button>
+                    <div className="row">
+                      {card.type === "vocabulary" ? (
+                        <button type="button" className="secondary" onClick={() => beginEdit(card)}>
+                          Edit
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => session && tombstoneCard(session.doc, card.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

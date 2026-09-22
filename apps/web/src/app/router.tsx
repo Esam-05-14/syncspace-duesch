@@ -24,6 +24,7 @@ import { SkillsPage } from "../features/learn/pages/SkillsPage.js";
 import { SoundsPage } from "../features/learn/pages/SoundsPage.js";
 import { SourcesPage } from "../features/learn/pages/SourcesPage.js";
 import { WordsPage } from "../features/learn/pages/WordsPage.js";
+import { WritePage } from "../features/learn/pages/WritePage.js";
 
 export function AppRouter() {
   return (
@@ -42,6 +43,7 @@ export function AppRouter() {
             <Route path="mapper" element={<MapperPage />} />
             <Route path="builder" element={<BuilderPage />} />
             <Route path="drill" element={<DrillPage />} />
+            <Route path="write" element={<WritePage />} />
             <Route path="inquire" element={<InquirePage />} />
             <Route path="skills" element={<SkillsPage />} />
             <Route path="lectures" element={<LecturesPage />} />

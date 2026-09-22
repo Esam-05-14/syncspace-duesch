@@ -38,6 +38,7 @@ describe("package boundaries", () => {
       read("packages/learning/src/drill.ts"),
       read("packages/learning/src/media.ts"),
       read("packages/learning/src/proofread.ts"),
+      read("packages/learning/src/writing.ts"),
     ].join("\n");
     expect(source.includes("yjs")).toBe(false);
     expect(source.includes("Y.Doc")).toBe(false);

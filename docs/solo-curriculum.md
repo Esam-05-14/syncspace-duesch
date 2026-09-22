@@ -52,6 +52,7 @@ IPA on our cards is a **draft classroom transcription** in that Wikipedia key, n
 - Inquiry: `strasse` hits Straße; `der` / `#topic` / `pos:` filter; one-letter typo still hits the list.
 - Four skills: every resource is `https:`; listen / read / write / speak each have at least one official page.
 - Sentence builder: filled slots produce a deterministic German string and English gloss.
+- Writing drills: article-fill and word-order sets are deterministic for a given day.
 - Package boundaries: `learning` still has no `Y.Doc`; personal-store still has no Hocuspocus.
 
 ## Release promise

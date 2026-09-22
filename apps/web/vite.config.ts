@@ -10,8 +10,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "prompt",
-      injectRegister: "auto",
+      registerType: "autoUpdate",
+      injectRegister: false,
       includeAssets: ["favicon.svg"],
       manifest: {
         name: "SyncSpace Deutsch",
@@ -26,6 +26,10 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,ico,woff2}"],
         navigateFallback: "/index.html",
+        navigateFallbackDenylist: [/^\/api\//, /^\/dev\//],
+      },
+      devOptions: {
+        enabled: false,
       },
     }),
   ],

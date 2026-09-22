@@ -87,8 +87,12 @@ export function GuidePage() {
         <p>
           <Link to="/review">Review</Link> is that queue. For a noun you type <em>der</em>,{" "}
           <em>die</em>, or <em>das</em>, then mark <strong>Again</strong> or <strong>Got it</strong>.
-          The next due time is a simple box schedule, not a scientific promise. Ratings never go
-          onto the shared board.
+          Keys: 1 der, 2 die, 3 das, A again, G got it. The next due time is a simple box schedule,
+          not a scientific promise. Ratings never go onto the shared board.
+        </p>
+        <p>
+          <Link to="/learn/write">Writing drills</Link> fill a dictionary article or rebuild a
+          finite clause from the same patterns as the builder. A clean check is not a teacher mark.
         </p>
       </section>
 
@@ -163,8 +167,21 @@ export function GuidePage() {
         <h2>Keep a copy of your private work</h2>
         <p>
           Browser storage can be cleared. In <Link to="/settings">Settings</Link>, export private
-          review when you care about the queue. Board export is visible material only: no tokens, no
+          review when you care about the queue. The page says how many cards sit in this profile and
+          whether an export was recorded here. Board export is visible material only: no tokens, no
           ratings. Import restores this profile, not your friend’s.
+        </p>
+      </section>
+
+      <section>
+        <h2>Prove the first-slice claims</h2>
+        <p>
+          Two tabs in one profile are the same person. A partner uses a separate browser profile and
+          the invitation from Settings. After a checkpoint, a third fresh profile should restore
+          from the server disk without an open peer. Production preview can reload a cached lesson
+          route with the network off. The checklist is in the repo as <code>docs/wave-0-walk.md</code>.
+          Node tests already record two clients and checkpoint restore. A human still has to sit the
+          browser walk.
         </p>
       </section>
 

@@ -1,15 +1,7 @@
-import {
-  DUDEN_HOME,
-  DUDEN_PRIVACY,
-  LANGUAGETOOL_HOME,
-  LANGUAGETOOL_PRIVACY,
-  applyProofreadFix,
-  type ProofreadReport,
-} from "@syncspace/learning";
-import { getLanguageToolConsent, hasDudenApiKey, setLanguageToolConsent } from "@syncspace/personal-store";
+import { LANGUAGETOOL_HOME, LANGUAGETOOL_PRIVACY, applyProofreadFix, type ProofreadReport } from "@syncspace/learning";
+import { getLanguageToolConsent, setLanguageToolConsent } from "@syncspace/personal-store";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { checkGerman } from "../../lib/proofread.js";
+import { checkGermanWithLanguageTool } from "../../lib/languagetool.js";
 
 export function ProofreadPanel({
   text,
@@ -19,14 +11,12 @@ export function ProofreadPanel({
   onApply: (next: string) => void;
 }) {
   const [consent, setConsent] = useState(false);
-  const [useDuden, setUseDuden] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<ProofreadReport | null>(null);
 
   useEffect(() => {
     void getLanguageToolConsent().then(setConsent);
-    void hasDudenApiKey().then(setUseDuden);
   }, []);
 
   async function runCheck() {
@@ -36,7 +26,7 @@ export function ProofreadPanel({
     setBusy(true);
     setError(null);
     try {
-      setReport(await checkGerman(text));
+      setReport(await checkGermanWithLanguageTool(text));
     } catch (reason) {
       setReport(null);
       setError(reason instanceof Error ? reason.message : "The check did not finish.");
@@ -45,28 +35,13 @@ export function ProofreadPanel({
     }
   }
 
-  const checkerName = useDuden ? "Duden" : "LanguageTool";
-  const checkerHome = useDuden ? DUDEN_HOME : LANGUAGETOOL_HOME;
-  const privacyHref = useDuden ? DUDEN_PRIVACY : LANGUAGETOOL_PRIVACY;
-
   return (
     <section className="proofread">
       <p>
-        Optional German spelling and grammar check.{" "}
-        {useDuden ? (
-          <>
-            A Duden key is saved on this device, so we use{" "}
-            <a href={DUDEN_HOME}>Duden</a> (spelling, grammar, punctuation).
-          </>
-        ) : (
-          <>
-            No Duden key in this profile, so we use the{" "}
-            <a href={LANGUAGETOOL_HOME}>LanguageTool</a> public API. Paste a free Duden key in{" "}
-            <Link to="/settings">Settings</Link> for the stronger German checker.
-          </>
-        )}{" "}
-        The public LanguageTool API stays available without a key. Neither check is a human review.
-        Suggestions can be wrong. Nothing is sent until you consent and click Check.
+        Optional spelling and grammar check for German, via{" "}
+        <a href={LANGUAGETOOL_HOME}>LanguageTool</a>. The public API is free, needs no key, and is
+        not a human review. Suggestions can be wrong. Nothing is sent until you consent and click
+        Check.
       </p>
       <label className="row">
         <input
@@ -78,20 +53,18 @@ export function ProofreadPanel({
             void setLanguageToolConsent(next);
           }}
         />
-        Send this text to {checkerName}. It leaves this device. See their{" "}
-        <a href={privacyHref}>privacy policy</a>.
+        Send this text to LanguageTool. It leaves this device. See their{" "}
+        <a href={LANGUAGETOOL_PRIVACY}>privacy policy</a>.
       </label>
       <div className="row">
         <button type="button" disabled={!consent || busy || !text.trim()} onClick={() => void runCheck()}>
           {busy ? "Checking…" : "Check German"}
         </button>
-        <a href={checkerHome}>{checkerName} site</a>
       </div>
       {error ? <p className="banner">{error}</p> : null}
       {report ? (
         <div>
           <p className="meta">
-            {report.engine === "duden" ? "Checked with Duden. " : "Checked with LanguageTool. "}
             {report.matches.length === 0
               ? `No issues reported for ${report.language}. That is not a guarantee.`
               : `${report.matches.length} issue${report.matches.length === 1 ? "" : "s"} reported for ${report.language}.`}

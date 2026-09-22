@@ -3,13 +3,11 @@ export { forgetBoard, forgetRoom, getRememberedToken, listLocalBoards, listRemem
 export { clearLessonProgress, getLessonProgress, markLessonComplete, type LessonProgress } from "./progress.js";
 export { clearRecentInquiries, listRecentInquiries, rememberInquiry } from "./inquiry.js";
 export {
-  clearDudenApiKey,
-  getDudenApiKey,
   getLanguageToolConsent,
   getLastLesson,
-  hasDudenApiKey,
+  getReviewExportAt,
   rememberLastLesson,
-  setDudenApiKey,
+  rememberReviewExport,
   setLanguageToolConsent,
 } from "./session.js";
 export {
