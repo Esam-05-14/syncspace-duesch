@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Layout } from "../components/Layout.js";
 import { BoardChrome } from "../features/boards/BoardChrome.js";
 import { BoardPage } from "../features/boards/BoardPage.js";
+import { GuidePage } from "../features/guide/GuidePage.js";
 import { HomePage } from "../features/home/HomePage.js";
 import { PracticePage } from "../features/practice/PracticePage.js";
 import { ReviewPage } from "../features/review/ReviewPage.js";
@@ -30,6 +31,7 @@ export function AppRouter() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/guide" element={<GuidePage />} />
           <Route path="/learn" element={<LearnChrome />}>
             <Route index element={<RoadmapPage />} />
             <Route path="alphabet" element={<AlphabetPage />} />

@@ -20,6 +20,7 @@ const TOOLS = [
   { to: "/learn/lectures", label: "Lectures" },
   { to: "/learn/skills", label: "Four skills" },
   { to: "/learn/sources", label: "Sources" },
+  { to: "/guide", label: "Guide" },
 ] as const;
 
 export function LearnChrome() {

@@ -186,6 +186,19 @@ th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(
   box-shadow: var(--shadow);
 }
 .footer-note { color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
+.guide section { margin: 1.75rem 0; max-width: 42rem; }
+.guide h2 { font-size: 1.2rem; margin: 0 0 0.45rem; }
+.guide p, .guide li { margin: 0.45rem 0; }
+.guide ol, .guide ul { padding-left: 1.2rem; }
+.guide kbd {
+  display: inline-block;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.85em;
+}
+.guide code { font-size: 0.92em; }
 
 .learn-nav a { padding: 0.15rem 0.1rem; }
 .ipa { font-family: "Cambria", "Times New Roman", serif; letter-spacing: 0.02em; }
