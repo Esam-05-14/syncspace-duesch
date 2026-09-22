@@ -1,6 +1,8 @@
 import { CORE_LEXICON } from "@syncspace/content";
 import { mapEnglishToGerman } from "@syncspace/learning";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArticleBadge } from "../ArticleBadge.js";
 import { SpeakButton } from "../SpeakButton.js";
 import { StationComplete } from "../StationComplete.js";
 
@@ -12,7 +14,8 @@ export function MapperPage() {
     <>
       <p>
         Type an English gloss. The matcher only searches this authored list (NFC, trim, lower
-        case). It does not call a translation API and it does not invent German.
+        case). It does not call a translation API and it does not invent German. For German first,
+        use <Link to="/learn/inquire">inquiry</Link> or the <Link to="/learn/drill">cover drill</Link>.
       </p>
       <label>
         English
@@ -35,7 +38,7 @@ export function MapperPage() {
               {hit.lexeme.article ? (
                 <>
                   {" "}
-                  · <span className="badge article">{hit.lexeme.article}</span>
+                  · <ArticleBadge article={hit.lexeme.article} />
                 </>
               ) : (
                 <> · {hit.lexeme.pos}</>
@@ -49,7 +52,12 @@ export function MapperPage() {
             <p className="meta">
               {hit.lexeme.exampleDe} — {hit.lexeme.exampleEn}
             </p>
-            <SpeakButton text={hit.lexeme.de} />
+            <div className="row">
+              <SpeakButton text={hit.lexeme.de} />
+              {hit.lexeme.pos === "noun" ? (
+                <Link to={`/learn/builder?noun=${encodeURIComponent(hit.lexeme.de)}`}>Use in a sentence</Link>
+              ) : null}
+            </div>
           </article>
         ))}
       </div>

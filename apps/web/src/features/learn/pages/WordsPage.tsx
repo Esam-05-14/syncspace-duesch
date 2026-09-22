@@ -4,6 +4,7 @@ import { articleMix, foldGerman, lexemeToReviewPrompt } from "@syncspace/learnin
 import { enrollInReview, listSchedules } from "@syncspace/personal-store";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { ArticleBadge } from "../ArticleBadge.js";
 import { SpeakButton } from "../SpeakButton.js";
 import { StationComplete } from "../StationComplete.js";
 import { ArticleMix } from "../visualizers/ArticleMix.js";
@@ -71,7 +72,7 @@ export function WordsPage() {
       <p>
         Five hundred everyday lemmas authored for this app. Not the Goethe A1 Wortliste. Gender
         on nouns is the dictionary article only. After you add a card, study it under{" "}
-        <Link to="/review">private review</Link>.
+        <Link to="/review">private review</Link> or the <Link to="/learn/drill">cover drill</Link>.
       </p>
       <ArticleMix mix={mix} />
       <div className="row" style={{ margin: "0.75rem 0", alignItems: "end" }}>
@@ -113,7 +114,7 @@ export function WordsPage() {
             {visible.slice(0, limit).map((row) => (
               <tr key={row.id}>
                 <td>
-                  {row.article ? <span className="badge article">{row.article}</span> : row.pos}
+                  {row.article ? <ArticleBadge article={row.article} /> : row.pos}
                 </td>
                 <td>
                   <strong>{row.de}</strong>
@@ -129,6 +130,11 @@ export function WordsPage() {
                 </td>
                 <td>
                   <SpeakButton text={row.de} label="Speak" />
+                  {row.pos === "noun" ? (
+                    <div>
+                      <Link to={`/learn/builder?noun=${encodeURIComponent(row.de)}`}>Sentence</Link>
+                    </div>
+                  ) : null}
                   {queued.has(row.id) ? (
                     <div className="meta">In this profile’s queue</div>
                   ) : (

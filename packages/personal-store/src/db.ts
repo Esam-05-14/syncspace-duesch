@@ -1,8 +1,8 @@
 import { openDB, type IDBPDatabase } from "idb";
-import type { ReviewEvent, ReviewSchedule } from "@syncspace/contracts";
+import type { LectureNote, ReviewEvent, ReviewSchedule } from "@syncspace/contracts";
 
 const DB_NAME = "syncspace-personal";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let activeName = DB_NAME;
 
@@ -33,6 +33,7 @@ export type PersonalSchema = {
   schedules: ReviewSchedule;
   boards: LocalBoardRecord;
   rooms: RememberedRoom;
+  lectures: LectureNote;
 };
 
 export async function openPersonalDb(): Promise<IDBPDatabase<PersonalSchema>> {
@@ -53,6 +54,9 @@ export async function openPersonalDb(): Promise<IDBPDatabase<PersonalSchema>> {
       }
       if (!db.objectStoreNames.contains("rooms")) {
         db.createObjectStore("rooms", { keyPath: "roomId" });
+      }
+      if (!db.objectStoreNames.contains("lectures")) {
+        db.createObjectStore("lectures", { keyPath: "id" });
       }
     },
   });

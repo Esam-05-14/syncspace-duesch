@@ -1,23 +1,30 @@
+import { rememberLastLesson } from "@syncspace/personal-store";
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { DraftBanner } from "./DraftBanner.js";
 
-const LINKS = [
+const PATH = [
   { to: "/learn", end: true, label: "Roadmap" },
-  { to: "/learn/inquire", label: "Inquire" },
-  { to: "/learn/skills", label: "Four skills" },
   { to: "/learn/alphabet", label: "Alphabet" },
   { to: "/learn/sounds", label: "Sounds" },
   { to: "/learn/words", label: "Words" },
   { to: "/learn/phrases", label: "Phrases" },
   { to: "/learn/grammar", label: "Grammar" },
+] as const;
+
+const TOOLS = [
+  { to: "/learn/drill", label: "Cover drill" },
+  { to: "/learn/inquire", label: "Inquire" },
   { to: "/learn/mapper", label: "Mapper" },
   { to: "/learn/builder", label: "Builder" },
+  { to: "/learn/lectures", label: "Lectures" },
+  { to: "/learn/skills", label: "Four skills" },
   { to: "/learn/sources", label: "Sources" },
 ] as const;
 
 export function LearnChrome() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -25,6 +32,10 @@ export function LearnChrome() {
   useEffect(() => {
     setQ(params.get("q") ?? "");
   }, [params]);
+
+  useEffect(() => {
+    void rememberLastLesson(location.pathname);
+  }, [location.pathname]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -76,12 +87,25 @@ export function LearnChrome() {
         <button type="submit">Inquire</button>
       </form>
       <DraftBanner />
-      <nav className="row learn-nav" style={{ margin: "1rem 0" }}>
-        {LINKS.map((link) => (
-          <NavLink key={link.to} end={"end" in link ? link.end : undefined} to={link.to}>
-            {link.label}
-          </NavLink>
-        ))}
+      <nav className="learn-nav" aria-label="Lesson path">
+        <p className="learn-nav-label">Path</p>
+        <div className="row">
+          {PATH.map((link) => (
+            <NavLink key={link.to} end={"end" in link ? link.end : undefined} to={link.to}>
+              {link.label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+      <nav className="learn-nav" aria-label="Study tools">
+        <p className="learn-nav-label">Tools</p>
+        <div className="row">
+          {TOOLS.map((link) => (
+            <NavLink key={link.to} to={link.to}>
+              {link.label}
+            </NavLink>
+          ))}
+        </div>
       </nav>
       <Outlet />
     </main>

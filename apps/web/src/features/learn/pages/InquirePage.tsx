@@ -4,6 +4,7 @@ import { inquire, lexemeToReviewPrompt, parseInquiry, type InquiryKind } from "@
 import { enrollInReview, listRecentInquiries, listSchedules, rememberInquiry } from "@syncspace/personal-store";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { ArticleBadge } from "../ArticleBadge.js";
 import { SpeakButton } from "../SpeakButton.js";
 import { StationComplete } from "../StationComplete.js";
 
@@ -168,7 +169,7 @@ export function InquirePage() {
               {hit.article ? (
                 <>
                   {" "}
-                  · <span className="badge article">{hit.article}</span>
+                  · <ArticleBadge article={hit.article} />
                 </>
               ) : null}{" "}
               · {hit.matchedOn} · {hit.score}

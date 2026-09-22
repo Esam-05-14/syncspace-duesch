@@ -1,14 +1,17 @@
 import { boardExportSchema, personalReviewBackupSchema } from "@syncspace/contracts";
 import {
+  clearDudenApiKey,
   clearReviewHistory,
   forgetRoom,
   getDisplayName,
+  hasDudenApiKey,
   listEvents,
   listRememberedRooms,
   listSchedules,
   rememberRoom,
   restoreReviewBackup,
   setDisplayName,
+  setDudenApiKey,
 } from "@syncspace/personal-store";
 import { SAMPLE_ROOM_ID } from "@syncspace/contracts";
 import { useEffect, useState } from "react";
@@ -22,10 +25,14 @@ export function SettingsPage() {
   const [invite, setInvite] = useState<string | null>(null);
   const [rememberWarning, setRememberWarning] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [dudenKey, setDudenKey] = useState("");
+  const [dudenSaved, setDudenSaved] = useState(false);
+  const [dudenMessage, setDudenMessage] = useState<string | null>(null);
 
   useEffect(() => {
     void getDisplayName().then(setName);
     void listRememberedRooms().then((rows) => setRooms(rows.map((row) => ({ roomId: row.roomId }))));
+    void hasDudenApiKey().then(setDudenSaved);
   }, []);
 
   async function saveName() {
@@ -96,6 +103,67 @@ export function SettingsPage() {
         <button type="button" onClick={() => void saveName()}>
           Save name
         </button>
+      </article>
+      <article className="card">
+        <h2>Duden German check</h2>
+        <p className="meta">
+          Best free-key option we found for German spelling, grammar, and punctuation. Create a
+          duden.de account, open{" "}
+          <a href="https://www.duden.de/api">API für Mentor</a>, pick the free package if it is
+          offered (about 20 checks a day), and paste the key. It stays in this profile. It is never
+          written to the shared board, awareness, or exports. Without a key, lecture notes use
+          LanguageTool’s public API.
+        </p>
+        <label>
+          API key
+          <input
+            type="password"
+            autoComplete="off"
+            value={dudenKey}
+            onChange={(event) => setDudenKey(event.target.value)}
+            placeholder={dudenSaved ? "Key saved on this device" : "Paste key from duden.de"}
+          />
+        </label>
+        <div className="row">
+          <button
+            type="button"
+            onClick={() => {
+              setDudenMessage(null);
+              void setDudenApiKey(dudenKey)
+                .then(() => {
+                  setDudenSaved(true);
+                  setDudenKey("");
+                  setDudenMessage("Duden key saved on this device.");
+                })
+                .catch((reason: unknown) => {
+                  setDudenMessage(reason instanceof Error ? reason.message : "Could not save that key.");
+                });
+            }}
+          >
+            Save key
+          </button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              void clearDudenApiKey().then(() => {
+                setDudenSaved(false);
+                setDudenKey("");
+                setDudenMessage("Duden key removed. Lecture notes will use LanguageTool.");
+              });
+            }}
+          >
+            Remove key
+          </button>
+        </div>
+        <p className="meta">
+          {dudenSaved
+            ? "A Duden key is saved on this device."
+            : "No Duden key in this profile."}{" "}
+          Duden’s privacy policy:{" "}
+          <a href="https://www.duden.de/datenschutz">duden.de/datenschutz</a>.
+        </p>
+        {dudenMessage ? <p className="banner">{dudenMessage}</p> : null}
       </article>
       <article className="card">
         <h2>Exports</h2>

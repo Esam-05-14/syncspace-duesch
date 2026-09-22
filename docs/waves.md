@@ -22,4 +22,8 @@ When time is tight, extra exercise modes and canvas decoration drop first. Offli
 | Official Goethe / DW / IPA sources | https links only | We do not host their media |
 | `/learn/inquire` umlaut fold, operators, typo repair | Deterministic over the authored corpus | No translation API; recent queries stay in this profile |
 | `/learn/skills` four-skill resource page | Official Goethe / DW / Deutschlandfunk links | We do not host audio or exam papers |
+| `/learn/drill` daily cover set | Deterministic mix; due nouns first | Ratings only if the word is already queued |
+| `/learn/lectures` one note per video or class | Personal IndexedDB; YouTube/Vimeo embed | Other class pages open in a new tab |
+| Duden check (optional key) | User-started; key in this profile only | Free package ~20/day if offered; not a human review |
+| LanguageTool `de-DE` check | Fallback public API after consent | Used when no Duden key is saved |
 | Human review of German | Not recorded | Starter and core-500 stay draft |

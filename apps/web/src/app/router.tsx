@@ -11,8 +11,11 @@ import { VocabularyPage } from "../features/vocabulary/VocabularyPage.js";
 import { LearnChrome } from "../features/learn/LearnChrome.js";
 import { AlphabetPage } from "../features/learn/pages/AlphabetPage.js";
 import { BuilderPage } from "../features/learn/pages/BuilderPage.js";
+import { DrillPage } from "../features/learn/pages/DrillPage.js";
 import { GrammarPage } from "../features/learn/pages/GrammarPage.js";
 import { InquirePage } from "../features/learn/pages/InquirePage.js";
+import { LecturePage } from "../features/learn/pages/LecturePage.js";
+import { LecturesPage } from "../features/learn/pages/LecturesPage.js";
 import { MapperPage } from "../features/learn/pages/MapperPage.js";
 import { PhrasesPage } from "../features/learn/pages/PhrasesPage.js";
 import { RoadmapPage } from "../features/learn/pages/RoadmapPage.js";
@@ -36,8 +39,11 @@ export function AppRouter() {
             <Route path="grammar" element={<GrammarPage />} />
             <Route path="mapper" element={<MapperPage />} />
             <Route path="builder" element={<BuilderPage />} />
+            <Route path="drill" element={<DrillPage />} />
             <Route path="inquire" element={<InquirePage />} />
             <Route path="skills" element={<SkillsPage />} />
+            <Route path="lectures" element={<LecturesPage />} />
+            <Route path="lectures/:id" element={<LecturePage />} />
             <Route path="sources" element={<SourcesPage />} />
           </Route>
           <Route path="/review" element={<ReviewPage />} />

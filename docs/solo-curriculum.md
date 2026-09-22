@@ -43,6 +43,7 @@ IPA on our cards is a **draft classroom transcription** in that Wikipedia key, n
 - Curriculum is static TypeScript. The sync server never imports it as a seed-from-empty-client path.
 - Review enrollment of a core word writes only to personal IndexedDB.
 - Shared Yjs schema is unchanged (`1.0.0`).
+- Lecture notes and LanguageTool consent live in personal IndexedDB only. See `docs/lecture-notes.md`.
 
 ## Tests that must stay green
 
@@ -55,4 +56,4 @@ IPA on our cards is a **draft classroom transcription** in that Wikipedia key, n
 
 ## Release promise
 
-The first-slice board/sync/review loop is unchanged. This adds a **local Lessons** surface plus inquiry and a four-skills link page. Remaining limits: no studio audio, no human review badge, no adaptive tutoring, core-500 is everyday draft coverage rather than a frequency-ranked corpus from Leipzig/DWDS.
+The first-slice board/sync/review loop is unchanged. This adds a **local Lessons** surface plus inquiry, a four-skills link page, and a daily cover drill. Remaining limits: no studio audio, no human review badge, no adaptive tutoring, core-500 is everyday draft coverage rather than a frequency-ranked corpus from Leipzig/DWDS.

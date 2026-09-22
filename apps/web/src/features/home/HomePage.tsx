@@ -1,8 +1,9 @@
 import { SAMPLE_ROOM_ID, createOpaqueId } from "@syncspace/contracts";
-import { listDue, listLocalBoards, listSchedules } from "@syncspace/personal-store";
+import { getLastLesson, getLessonProgress, listDue, listLocalBoards, listSchedules } from "@syncspace/personal-store";
 import { describeDue } from "@syncspace/learning";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { nextOpenStation, pathForLesson } from "../learn/stations.js";
 import { setToken } from "../../lib/tokens.js";
 
 const SYNC_HTTP = import.meta.env.VITE_SYNC_HTTP ?? "http://127.0.0.1:4357";
@@ -16,16 +17,25 @@ export function HomePage() {
   const [dueCount, setDueCount] = useState(0);
   const [nextDue, setNextDue] = useState<string | null>(null);
   const [queueSize, setQueueSize] = useState(0);
+  const [lastLesson, setLastLesson] = useState<string | null>(null);
+  const [nextStation, setNextStation] = useState<{ titleEn: string; path: string } | null>(null);
 
   useEffect(() => {
-    void Promise.all([listLocalBoards(), listDue(new Date()), listSchedules()]).then(
-      ([local, due, schedules]) => {
-        setBoards(local);
-        setDueCount(due.length);
-        setQueueSize(schedules.length);
-        setNextDue(schedules[0] ? describeDue(schedules[0].dueAt) : null);
-      },
-    );
+    void Promise.all([
+      listLocalBoards(),
+      listDue(new Date()),
+      listSchedules(),
+      getLastLesson(),
+      getLessonProgress(),
+    ]).then(([local, due, schedules, last, progress]) => {
+      setBoards(local);
+      setDueCount(due.length);
+      setQueueSize(schedules.length);
+      setNextDue(schedules[0] ? describeDue(schedules[0].dueAt) : null);
+      setLastLesson(last);
+      const station = nextOpenStation(progress.completed);
+      setNextStation(station ? { titleEn: station.titleEn, path: pathForLesson(station.lessonId) } : null);
+    });
   }, []);
 
   async function openSample() {
@@ -49,6 +59,15 @@ export function HomePage() {
   }
 
   const lastStandalone = boards.find((board) => board.kind === "standalone");
+  const continuePath = dueCount > 0 ? "/review" : lastLesson && lastLesson !== "/learn" ? lastLesson : nextStation?.path ?? "/learn";
+  const continueLabel =
+    dueCount > 0
+      ? `Review ${dueCount} due`
+      : lastLesson && lastLesson !== "/learn"
+        ? "Continue last lesson"
+        : nextStation
+          ? `Open ${nextStation.titleEn}`
+          : "Open lessons";
 
   return (
     <main className="page">
@@ -60,33 +79,55 @@ export function HomePage() {
         </p>
       </section>
 
-          <div className="cards" style={{ marginTop: "1.5rem" }}>
-            <article className="card">
-              <h2>Lessons from scratch</h2>
-              <p>
-                Alphabet, sounds, a draft core-500, inquiry, four-skill resources, and a sentence
-                builder. Official Goethe and DW pages stay on their own sites.
-              </p>
-              <div className="row">
-                <button type="button" onClick={() => navigate("/learn")}>
-                  Open lessons
-                </button>
-                <button type="button" className="secondary" onClick={() => navigate("/learn/inquire")}>
-                  Fast inquiry
-                </button>
+      <section className="study-strip">
+        <p>
+          <b>{dueCount}</b> due now
+          {queueSize > 0 && dueCount === 0 ? <span className="meta"> · next {nextDue}</span> : null}
+        </p>
+        <p>
+          Next station:{" "}
+          {nextStation ? <Link to={nextStation.path}>{nextStation.titleEn}</Link> : <span>path ticked</span>}
+        </p>
+        <div className="row">
+          <button type="button" onClick={() => navigate(continuePath)}>
+            {continueLabel}
+          </button>
+          <button type="button" className="secondary" onClick={() => navigate("/learn/drill")}>
+            Cover drill
+          </button>
+        </div>
+      </section>
+
+      <div className="cards" style={{ marginTop: "1.5rem" }}>
+        <article className="card">
+          <h2>Lessons from scratch</h2>
+          <p>
+            Alphabet, sounds, a draft core-500, inquiry, four-skill resources, and a sentence
+            builder. Official Goethe and DW pages stay on their own sites.
+          </p>
+          <div className="row">
+            <button type="button" onClick={() => navigate("/learn")}>
+              Open lessons
+            </button>
+            <button type="button" className="secondary" onClick={() => navigate("/learn/inquire")}>
+              Fast inquiry
+            </button>
                 <button type="button" className="secondary" onClick={() => navigate("/learn/skills")}>
                   Four skills
                 </button>
-              </div>
-            </article>
-            <article className="card">
-              <h2>Private review</h2>
+                <button type="button" className="secondary" onClick={() => navigate("/learn/lectures")}>
+                  Lecture notes
+                </button>
+          </div>
+        </article>
+        <article className="card">
+          <h2>Private review</h2>
           <p>
             {dueCount > 0
               ? `${dueCount} card${dueCount === 1 ? "" : "s"} due now.`
               : queueSize > 0
                 ? `Nothing due. ${nextDue ?? ""}`.trim()
-                : "No cards in this profile’s queue yet."}
+                : "No cards in this profile’s queue yet. Cover a noun, then add it to the queue."}
           </p>
           <div className="row">
             <button type="button" onClick={() => navigate("/review")}>

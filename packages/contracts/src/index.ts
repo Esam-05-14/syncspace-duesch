@@ -89,3 +89,14 @@ export {
   type SourceCitation,
   type VerbForms,
 } from "./schemas/curriculum.js";
+export {
+  LECTURE_BOARD_ID,
+  lectureFactKindSchema,
+  lectureFactSchema,
+  lectureNoteSchema,
+  lectureSourceKindSchema,
+  type LectureFact,
+  type LectureFactKind,
+  type LectureNote,
+  type LectureSourceKind,
+} from "./schemas/lecture.js";

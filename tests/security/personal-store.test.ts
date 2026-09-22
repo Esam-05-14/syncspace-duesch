@@ -6,13 +6,23 @@ import {
   clearRecentInquiries,
   clearReviewHistory,
   enrollInReview,
+  createLecture,
+  getDudenApiKey,
+  getLanguageToolConsent,
+  hasDudenApiKey,
+  getLastLesson,
+  getLecture,
   getLessonProgress,
+  listLectures,
   listDue,
   listEvents,
   listRecentInquiries,
   listSchedules,
   markLessonComplete,
   rememberInquiry,
+  rememberLastLesson,
+  setDudenApiKey,
+  setLanguageToolConsent,
   rateCard,
   restoreReviewBackup,
   setPersonalDatabaseNameForTests,
@@ -150,5 +160,47 @@ describe("isolated personal review stores", () => {
     expect(await listRecentInquiries()).toEqual(["der tisch", "strasse"]);
     setPersonalDatabaseNameForTests("syncspace-inquire-b");
     expect(await listRecentInquiries()).toEqual([]);
+  });
+
+  it("remembers the last lesson path in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-last-lesson");
+    await rememberLastLesson("/learn/sounds");
+    expect(await getLastLesson()).toBe("/learn/sounds");
+    await rememberLastLesson("/board/not-a-lesson");
+    expect(await getLastLesson()).toBe("/learn/sounds");
+    setPersonalDatabaseNameForTests("syncspace-last-lesson-b");
+    expect(await getLastLesson()).toBeNull();
+  });
+
+  it("keeps lecture notes in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-lectures");
+    const note = await createLecture({
+      title: "Nicos Weg 1",
+      sourceUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    });
+    expect(note.sourceKind).toBe("youtube");
+    expect((await listLectures()).map((row) => row.id)).toEqual([note.id]);
+    expect((await getLecture(note.id))?.title).toBe("Nicos Weg 1");
+    setPersonalDatabaseNameForTests("syncspace-lectures-b");
+    expect(await listLectures()).toEqual([]);
+  });
+
+  it("stores LanguageTool consent in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-lt-consent");
+    expect(await getLanguageToolConsent()).toBe(false);
+    await setLanguageToolConsent(true);
+    expect(await getLanguageToolConsent()).toBe(true);
+    setPersonalDatabaseNameForTests("syncspace-lt-consent-b");
+    expect(await getLanguageToolConsent()).toBe(false);
+  });
+
+  it("stores a Duden API key in this profile only", async () => {
+    setPersonalDatabaseNameForTests("syncspace-duden-key");
+    expect(await hasDudenApiKey()).toBe(false);
+    await setDudenApiKey("duden-test-key-ok");
+    expect(await getDudenApiKey()).toBe("duden-test-key-ok");
+    await expect(setDudenApiKey("short")).rejects.toThrow(/does not look like/);
+    setPersonalDatabaseNameForTests("syncspace-duden-key-b");
+    expect(await getDudenApiKey()).toBeNull();
   });
 });

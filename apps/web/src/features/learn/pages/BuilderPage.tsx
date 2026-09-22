@@ -1,6 +1,7 @@
 import { CORE_LEXICON, SENTENCE_TEMPLATES } from "@syncspace/content";
 import { buildSentence } from "@syncspace/learning";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { SpeakButton } from "../SpeakButton.js";
 import { StationComplete } from "../StationComplete.js";
 
@@ -11,11 +12,23 @@ export function BuilderPage() {
     () => CORE_LEXICON.filter((row) => row.pos === "verb" && row.forms && row.transitive),
     [],
   );
+  const [params] = useSearchParams();
   const [templateId, setTemplateId] = useState(SENTENCE_TEMPLATES[0]?.id ?? "");
   const [nounId, setNounId] = useState(nouns.find((row) => row.de === "Tisch")?.id ?? nouns[0]?.id ?? "");
   const [adjId, setAdjId] = useState(adjectives.find((row) => row.de === "klein")?.id ?? adjectives[0]?.id ?? "");
   const [verbId, setVerbId] = useState(verbs.find((row) => row.de === "haben")?.id ?? verbs[0]?.id ?? "");
   const [definite, setDefinite] = useState(true);
+
+  useEffect(() => {
+    const requested = params.get("noun");
+    if (!requested) {
+      return;
+    }
+    const found = nouns.find((row) => row.de === requested || row.id === requested);
+    if (found) {
+      setNounId(found.id);
+    }
+  }, [params, nouns]);
 
   const template = SENTENCE_TEMPLATES.find((row) => row.id === templateId) ?? SENTENCE_TEMPLATES[0];
   const noun = nouns.find((row) => row.id === nounId);
