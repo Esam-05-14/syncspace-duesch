@@ -44,6 +44,12 @@ describe("language inquiry", () => {
     expect(hits.some((hit) => hit.titleDe === "der Tisch" && hit.matchedOn === "fuzzy-de")).toBe(true);
   });
 
+  it("finds an extra draft practice lemma", () => {
+    const hits = inquire("seife", corpus);
+    expect(hits[0]?.titleDe).toBe("die Seife");
+    expect(hits[0]?.exampleDe).toBe("Die Seife liegt neben dem Waschbecken.");
+  });
+
   it("returns an empty list for a blank query", () => {
     expect(inquire("   ", corpus)).toEqual([]);
   });

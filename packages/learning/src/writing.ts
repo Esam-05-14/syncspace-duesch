@@ -35,6 +35,23 @@ export type WordOrderItem = {
   notes: string[];
 };
 
+export type WeilClauseSource = {
+  id: string;
+  expectedDe: string;
+  expectedEn: string;
+  noteEn: string;
+};
+
+export type WeilClauseItem = {
+  id: string;
+  kind: "weil-clause";
+  tokens: string[];
+  expected: string[];
+  expectedDe: string;
+  expectedEn: string;
+  noteEn: string;
+};
+
 function dayRank(id: string, day: string): number {
   let hash = 0;
   const seed = `${day}:${id}`;
@@ -48,7 +65,7 @@ export function tokenizeGermanSentence(de: string): string[] {
   const parts = de.normalize("NFC").trim().split(/\s+/).filter(Boolean);
   const tokens: string[] = [];
   for (const part of parts) {
-    const match = /^(.*?)([.?!])$/.exec(part);
+    const match = /^(.*?)([,;.?!])$/.exec(part);
     const word = match?.[1];
     const mark = match?.[2];
     if (word && mark) {
@@ -211,11 +228,37 @@ export function pickWordOrder(input: {
   return items;
 }
 
+/** Deterministic weil-clause rebuild. Verb of the reason clause stays last. */
+export function pickWeilClause(input: {
+  clauses: readonly WeilClauseSource[];
+  day?: string;
+  limit?: number;
+}): WeilClauseItem[] {
+  const day = input.day ?? new Date().toISOString().slice(0, 10);
+  const limit = input.limit ?? 6;
+  return input.clauses
+    .slice()
+    .sort((left, right) => dayRank(left.id, `weil:${day}`) - dayRank(right.id, `weil:${day}`) || left.id.localeCompare(right.id))
+    .slice(0, limit)
+    .map((row) => {
+      const expected = tokenizeGermanSentence(row.expectedDe);
+      return {
+        id: `weil:${row.id}`,
+        kind: "weil-clause" as const,
+        tokens: scrambleTokens(expected, `${day}:${row.id}`),
+        expected,
+        expectedDe: row.expectedDe,
+        expectedEn: row.expectedEn,
+        noteEn: row.noteEn,
+      };
+    });
+}
+
 export function checkWordOrder(
   submitted: readonly string[],
   expected: readonly string[],
 ): { ok: boolean; submittedDe: string; expectedDe: string } {
-  const submittedDe = submitted.join(" ").replace(/\s+([.?!])/g, "$1");
-  const expectedDe = expected.join(" ").replace(/\s+([.?!])/g, "$1");
+  const submittedDe = submitted.join(" ").replace(/\s+([,;.?!])/g, "$1");
+  const expectedDe = expected.join(" ").replace(/\s+([,;.?!])/g, "$1");
   return { ok: submitted.join("\0") === expected.join("\0"), submittedDe, expectedDe };
 }

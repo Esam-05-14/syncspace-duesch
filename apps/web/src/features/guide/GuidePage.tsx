@@ -6,8 +6,9 @@ export function GuidePage() {
       <h1>How to use SyncSpace Deutsch</h1>
       <p className="lede">
         This is a small study workspace for German. You learn on this device. Ratings stay in this
-        browser profile. A friend can sit with you on a shared board if the sync process is running
-        on this computer. It is ordinary software, not a tutor and not an exam.
+        browser profile. A friend can sit with you on a shared board if a sync process is running —
+        on this computer (loopback) or on a hosted trusted-group box. It is ordinary software, not a
+        tutor and not an exam.
       </p>
 
       <section>
@@ -92,8 +93,9 @@ export function GuidePage() {
         </p>
         <p>
           <Link to="/learn/write">Writing drills</Link> fill a dictionary article, pick the
-          accusative form after <em>haben</em>, or rebuild a finite clause from the same patterns as
-          the builder. A clean check is not a teacher mark.
+          accusative form after <em>haben</em>, rebuild a finite clause, or put the verb last after{" "}
+          <em>weil</em>. Hear the authored example with the device voice. A clean check is not a
+          teacher mark.
         </p>
       </section>
 
@@ -139,6 +141,32 @@ export function GuidePage() {
       </section>
 
       <section>
+        <h2>Study with a friend on another laptop</h2>
+        <p>
+          The public website can teach on this device. <strong>Connected</strong> and{" "}
+          <strong>server checkpoint recorded</strong> need a long-lived sync process with a disk —
+          Fly, Railway, or a small VPS with Caddy, not a Vercel serverless function. The operator of
+          that box can read the shared board. It is not end-to-end encrypted.
+        </p>
+        <ol>
+          <li>The operator starts the box once and keeps <code>./data</code> on a volume.</li>
+          <li>
+            The website is built with <code>VITE_SYNC_WS</code> / <code>VITE_SYNC_HTTP</code> as{" "}
+            <code>wss:</code> / <code>https:</code>. The box allow-list includes that website origin.
+          </li>
+          <li>
+            Share a runtime invitation out of band. The public host does not mint one from{" "}
+            <code>/dev/sample-room</code>.
+          </li>
+          <li>Each person opens the public website and pastes the invitation.</li>
+        </ol>
+        <p>
+          Anyone with the token is an editor. Do not paste it into the board, a screenshot, or git.
+          The steps live in <code>docs/deploy-sync.md</code>.
+        </p>
+      </section>
+
+      <section>
         <h2>Read the status line as four facts</h2>
         <p>On a shared board the bar is not one green “all saved” badge. Read each part:</p>
         <ul>
@@ -178,11 +206,10 @@ export function GuidePage() {
         <h2>Prove the first-slice claims</h2>
         <p>
           Two tabs in one profile are the same person. A partner uses a separate browser profile and
-          the invitation from Settings. After a checkpoint, a third fresh profile should restore
-          from the server disk without an open peer. Production preview can reload a cached lesson
-          route with the network off. The checklist is in the repo as <code>docs/wave-0-walk.md</code>.
-          Node tests already record two clients and checkpoint restore. A human still has to sit the
-          browser walk.
+          the invitation from Settings. After a checkpoint, a third fresh profile can restore from
+          the server disk without an open peer. Those two walks have been sat. Production preview
+          can still be checked by reloading a cached lesson route with the network off. The
+          remaining checklist is in the repo as <code>docs/wave-0-walk.md</code>.
         </p>
       </section>
 

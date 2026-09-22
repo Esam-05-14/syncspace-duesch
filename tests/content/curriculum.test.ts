@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { CORE_LEXICON, PHRASES, SKILL_RESOURCES, validateCurriculum } from "@syncspace/content";
+import {
+  CORE_LEXICON,
+  EXTRA_LEXICON,
+  PHRASES,
+  SKILL_RESOURCES,
+  WEIL_CLAUSES,
+  validateCurriculum,
+} from "@syncspace/content";
 
 describe("solo curriculum", () => {
   const curriculum = validateCurriculum();
@@ -40,6 +47,17 @@ describe("solo curriculum", () => {
     expect(curriculum.letters).toHaveLength(30);
     expect(curriculum.roadmap).toHaveLength(10);
     expect(curriculum.grammar).toHaveLength(9);
+  });
+
+  it("authors extra draft practice beside the locked core-500", () => {
+    expect(EXTRA_LEXICON).toHaveLength(20);
+    expect(EXTRA_LEXICON.every((row) => row.contentStatus === "draft")).toBe(true);
+    const coreHeadwords = new Set(CORE_LEXICON.map((row) => row.de.normalize("NFC")));
+    const extraHeadwords = EXTRA_LEXICON.map((row) => row.de.normalize("NFC"));
+    expect(new Set(extraHeadwords).size).toBe(20);
+    expect(extraHeadwords.every((word) => !coreHeadwords.has(word))).toBe(true);
+    expect(WEIL_CLAUSES).toHaveLength(8);
+    expect(WEIL_CLAUSES.every((row) => row.expectedDe.includes("weil"))).toBe(true);
   });
 
   it("lists https resources for all four skills", () => {

@@ -1,4 +1,4 @@
-import { CORE_LEXICON, inquiryCorpus } from "@syncspace/content";
+import { PRACTICE_LEXICON, inquiryCorpus } from "@syncspace/content";
 import { CURRICULUM_BOARD_ID, contentHash } from "@syncspace/contracts";
 import { inquire, lexemeToReviewPrompt, parseInquiry, type InquiryKind } from "@syncspace/learning";
 import { enrollInReview, listRecentInquiries, listSchedules, rememberInquiry } from "@syncspace/personal-store";
@@ -57,7 +57,7 @@ export function InquirePage() {
   }
 
   async function enroll(id: string) {
-    const lexeme = CORE_LEXICON.find((row) => row.id === id);
+    const lexeme = PRACTICE_LEXICON.find((row) => row.id === id);
     if (!lexeme) {
       return;
     }
@@ -180,6 +180,7 @@ export function InquirePage() {
             <div className="row">
               <Link to={hit.href}>Open</Link>
               {hit.speakText ? <SpeakButton text={hit.speakText} label="Speak" /> : null}
+              {hit.exampleDe ? <SpeakButton text={hit.exampleDe} label="Hear example" /> : null}
               {hit.speakText ? (
                 <button type="button" className="secondary" onClick={() => void copyGerman(hit.speakText ?? "", hit.id)}>
                   {copied === hit.id ? "Copied" : "Copy"}

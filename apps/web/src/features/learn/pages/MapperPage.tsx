@@ -1,4 +1,4 @@
-import { CORE_LEXICON } from "@syncspace/content";
+import { PRACTICE_LEXICON } from "@syncspace/content";
 import { mapEnglishToGerman } from "@syncspace/learning";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -8,7 +8,7 @@ import { StationComplete } from "../StationComplete.js";
 
 export function MapperPage() {
   const [query, setQuery] = useState("table");
-  const hits = useMemo(() => mapEnglishToGerman(query, CORE_LEXICON).slice(0, 12), [query]);
+  const hits = useMemo(() => mapEnglishToGerman(query, PRACTICE_LEXICON).slice(0, 12), [query]);
 
   return (
     <>
@@ -26,7 +26,9 @@ export function MapperPage() {
           autoComplete="off"
         />
       </label>
-      <p className="meta">{hits.length} hit{hits.length === 1 ? "" : "s"} in the core 500.</p>
+      <p className="meta">
+        {hits.length} hit{hits.length === 1 ? "" : "s"} in the authored practice list.
+      </p>
       {hits.length === 0 && query.trim() ? (
         <p className="banner">No authored match. Try a shorter everyday word, or open the word list.</p>
       ) : null}
@@ -54,6 +56,7 @@ export function MapperPage() {
             </p>
             <div className="row">
               <SpeakButton text={hit.lexeme.de} />
+              <SpeakButton text={hit.lexeme.exampleDe} label="Hear example" />
               {hit.lexeme.pos === "noun" ? (
                 <Link to={`/learn/builder?noun=${encodeURIComponent(hit.lexeme.de)}`}>Use in a sentence</Link>
               ) : null}

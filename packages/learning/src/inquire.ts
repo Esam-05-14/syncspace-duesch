@@ -31,6 +31,7 @@ export type InquiryHit = {
   href: string;
   article?: "der" | "die" | "das" | null;
   speakText?: string;
+  exampleDe?: string;
   lexemeId?: string;
 };
 
@@ -192,6 +193,7 @@ function lexemeHit(lexeme: CoreLexeme, score: number, matchedOn: string): Inquir
     href: `/learn/words?q=${encodeURIComponent(lexeme.de)}`,
     article: lexeme.article,
     speakText: lexeme.de,
+    exampleDe: lexeme.exampleDe,
     lexemeId: lexeme.id,
   };
 }

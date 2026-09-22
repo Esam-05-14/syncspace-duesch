@@ -39,4 +39,4 @@ Not in this slice: remote hosting, schema migrations, three-client qualification
 
 ## Locked decisions
 
-See `docs/architecture-decisions/adr-s01-s07.md` and `docs/conflict-policy.md`.
+See `docs/architecture-decisions/adr-s01-s07.md`, `docs/architecture-decisions/adr-s08-hosted-trusted-group.md`, and `docs/conflict-policy.md`. First-slice partner sync stays loopback by default. Hosted trusted-group is optional and does not change schema `1.0.0`.

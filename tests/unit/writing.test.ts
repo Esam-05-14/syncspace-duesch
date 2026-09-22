@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { CORE_LEXICON, SENTENCE_TEMPLATES } from "@syncspace/content";
+import { CORE_LEXICON, SENTENCE_TEMPLATES, WEIL_CLAUSES } from "@syncspace/content";
 import {
   checkAccusativeForm,
   checkWordOrder,
   pickAccusativeFill,
   pickArticleFill,
+  pickWeilClause,
   pickWordOrder,
   shuffleDeterministic,
   tokenizeGermanSentence,
@@ -23,6 +24,18 @@ describe("writing drills", () => {
 
   it("tokenizes a clause and checks authored order", () => {
     expect(tokenizeGermanSentence("Das ist der Tisch.")).toEqual(["Das", "ist", "der", "Tisch", "."]);
+    expect(tokenizeGermanSentence("Ich lerne Deutsch, weil ich in Berlin wohne.")).toEqual([
+      "Ich",
+      "lerne",
+      "Deutsch",
+      ",",
+      "weil",
+      "ich",
+      "in",
+      "Berlin",
+      "wohne",
+      ".",
+    ]);
     const expected = ["Ich", "habe", "den", "Tisch", "."];
     expect(checkWordOrder(expected, expected).ok).toBe(true);
     expect(checkWordOrder(["Ich", "Tisch", "habe", "den", "."], expected).ok).toBe(false);
@@ -61,6 +74,19 @@ describe("writing drills", () => {
     ).toBe("Ich habe den Tisch.");
     expect(checkAccusativeForm("den", "den").ok).toBe(true);
     expect(checkAccusativeForm("der", "den").ok).toBe(false);
+  });
+
+  it("picks a deterministic weil-clause set with the verb last", () => {
+    const first = pickWeilClause({ clauses: WEIL_CLAUSES, day: "2026-09-22" });
+    const second = pickWeilClause({ clauses: WEIL_CLAUSES, day: "2026-09-22" });
+    expect(first.length).toBeGreaterThanOrEqual(6);
+    expect(first.map((row) => row.id)).toEqual(second.map((row) => row.id));
+    expect(first.every((row) => row.expectedDe.includes("weil"))).toBe(true);
+    expect(first.every((row) => checkWordOrder(row.expected, row.expected).ok)).toBe(true);
+    const lernen = WEIL_CLAUSES.find((row) => row.id === "weil-lerne-wohne");
+    expect(lernen?.expectedDe).toBe("Ich lerne Deutsch, weil ich in Berlin wohne.");
+    const tokens = tokenizeGermanSentence(lernen!.expectedDe);
+    expect(tokens[tokens.length - 2]).toBe("wohne");
   });
 
   it("shuffles with a stable seed", () => {

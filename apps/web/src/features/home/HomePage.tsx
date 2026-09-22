@@ -4,7 +4,7 @@ import { describeDue } from "@syncspace/learning";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { nextOpenStation, pathForLesson } from "../learn/stations.js";
-import { viteSyncEndpoints } from "../../lib/sync-endpoints.js";
+import { requestSampleInvitation } from "../../lib/sample-room.js";
 import { setToken } from "../../lib/tokens.js";
 
 type BoardRow = { id: string; title: string; kind: string; updatedAt: string };
@@ -39,22 +39,13 @@ export function HomePage() {
 
   async function openSample() {
     setJoinError(null);
-    const { http } = viteSyncEndpoints();
-    if (!http) {
-      setJoinError("This public website does not run the sync server. Open a local board, or run npm run dev on loopback for a partner room.");
+    const result = await requestSampleInvitation();
+    if (result.status !== "ready") {
+      setJoinError(result.message);
       return;
     }
-    try {
-      const response = await fetch(`${http}/dev/sample-room`);
-      if (!response.ok) {
-        throw new Error("The development join helper is not available. Is the sync server running on loopback?");
-      }
-      const body = (await response.json()) as { roomId: string; token: string };
-      setToken(body.roomId, body.token);
-      navigate(`/board/${body.roomId}?mode=shared`);
-    } catch (error) {
-      setJoinError(error instanceof Error ? error.message : "Could not open the sample room.");
-    }
+    setToken(result.roomId, result.token);
+    navigate(`/board/${result.roomId}?mode=shared`);
   }
 
   function createStandalone(seedStarter: boolean) {
@@ -170,8 +161,8 @@ export function HomePage() {
         <article className="card">
           <h2>Study with a partner</h2>
           <p>
-            Open the server-seeded A1–B1 board. Needs a running sync process. The public website does
-            not include that process. The invitation is generated at runtime and is not in git.
+            Open the server-seeded A1–B1 board on loopback. A public website needs a separate
+            hosted sync process (ADR-S08) and a runtime invitation. The token is not in git.
           </p>
           <button type="button" className="secondary" onClick={() => void openSample()}>
             Open {SAMPLE_ROOM_ID}

@@ -6,12 +6,14 @@ import type DatabaseType from "better-sqlite3";
 import * as Y from "yjs";
 import { authorizeRoom } from "../auth/authorize.js";
 import { getSampleInvitation } from "../documents/rooms.js";
+import {
+  assertHostedOrigins,
+  corsHeaders,
+  isLoopbackHostHeader,
+  resolveSyncAccess,
+  type SyncAccess,
+} from "../http/access.js";
 import { activeTokenHashes, fetchSnapshot, storeSnapshot } from "../persistence/sqlite.js";
-
-function isLoopbackHost(host: string | undefined): boolean {
-  const name = (host ?? "").split(":")[0];
-  return name === "127.0.0.1" || name === "localhost";
-}
 
 export function createSyncServer(input: {
   db: DatabaseType.Database;
@@ -20,8 +22,11 @@ export function createSyncServer(input: {
   debounce?: number;
   maxDebounce?: number;
   quiet?: boolean;
+  access?: SyncAccess;
 }): ReturnType<typeof Server.configure> {
   const { db, host, port, debounce = 2000, maxDebounce = 8000, quiet = false } = input;
+  const access = input.access ?? resolveSyncAccess({ host });
+  assertHostedOrigins(access);
 
   return Server.configure({
     name: "syncspace-deutsch",
@@ -63,20 +68,18 @@ export function createSyncServer(input: {
     async onAuthenticate({ token, documentName }) {
       authorizeRoom(documentName, token, activeTokenHashes(db, documentName));
     },
+    async onConnect({ request }) {
+      const origin = typeof request.headers.origin === "string" ? request.headers.origin : "";
+      if (!access.loopbackOnly && origin && !corsHeaders(origin, access)["access-control-allow-origin"]) {
+        throw new Error("origin not allowed");
+      }
+    },
     async onRequest(data) {
       const { request, response } = data;
       const hostHeader = request.headers.host;
       const url = new URL(request.url ?? "/", `http://${hostHeader ?? "127.0.0.1"}`);
-      const origin = request.headers.origin ?? "";
-      const allowOrigin =
-        origin.startsWith("http://127.0.0.1:") || origin.startsWith("http://localhost:") ? origin : "";
-      const cors: Record<string, string> = allowOrigin
-        ? {
-            "access-control-allow-origin": allowOrigin,
-            "access-control-allow-methods": "GET, OPTIONS",
-            vary: "origin",
-          }
-        : {};
+      const origin = typeof request.headers.origin === "string" ? request.headers.origin : "";
+      const cors = corsHeaders(origin, access);
 
       const finish = (status: number, headers: Record<string, string>, body: string): never => {
         response.writeHead(status, headers);
@@ -85,7 +88,7 @@ export function createSyncServer(input: {
         throw undefined;
       };
 
-      if (!isLoopbackHost(hostHeader)) {
+      if (access.loopbackOnly && !isLoopbackHostHeader(hostHeader)) {
         finish(403, { "content-type": "text/plain; charset=utf-8" }, "loopback only");
       }
 
@@ -98,6 +101,9 @@ export function createSyncServer(input: {
       }
 
       if (url.pathname === "/dev/sample-room") {
+        if (!access.sampleRoomEnabled) {
+          finish(404, { "content-type": "text/plain; charset=utf-8", ...cors }, "not found");
+        }
         const sample = getSampleInvitation();
         if (!sample) {
           finish(503, { "content-type": "application/json; charset=utf-8", ...cors }, JSON.stringify({ error: "sample-room-not-ready" }));
@@ -115,6 +121,9 @@ export function createSyncServer(input: {
       }
 
       if (url.pathname.startsWith("/dev/snapshot/")) {
+        if (!access.snapshotEnabled) {
+          finish(404, { "content-type": "text/plain; charset=utf-8", ...cors }, "not found");
+        }
         const documentId = decodeURIComponent(url.pathname.slice("/dev/snapshot/".length));
         const row = fetchSnapshot(db, documentId);
         if (!row) {
@@ -138,7 +147,13 @@ export function createSyncServer(input: {
       }
 
       if (url.pathname === "/") {
-        finish(200, { "content-type": "text/plain; charset=utf-8" }, "SyncSpace Deutsch sync server. Loopback only.");
+        finish(
+          200,
+          { "content-type": "text/plain; charset=utf-8" },
+          access.loopbackOnly
+            ? "SyncSpace Deutsch sync server. Loopback only."
+            : "SyncSpace Deutsch sync server. Trusted-group host. Not multi-tenant and not end-to-end encrypted.",
+        );
       }
 
       finish(404, { "content-type": "text/plain; charset=utf-8" }, "not found");

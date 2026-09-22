@@ -5,7 +5,7 @@ alwaysApply: true
 
 SyncSpace Deutsch is a deterministic collaborative German study tool, not an AI wrapper.
 
-Read `docs/project-context.md`, `docs/versions.md`, `docs/conflict-policy.md`, and `AGENTS.md` before changing shared/private ownership, schema, deletion, grading, or room access.
+Read `docs/project-context.md`, `docs/versions.md`, `docs/conflict-policy.md`, `docs/architecture-decisions/adr-s08-hosted-trusted-group.md`, and `AGENTS.md` before changing shared/private ownership, schema, deletion, grading, room access, or hosted sync bind/CORS.
 
 Use separate status language: saved on this device, connected, initial synchronization complete, server checkpoint recorded.
 

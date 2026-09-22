@@ -10,15 +10,15 @@ The study UI needs a public https URL. A partner cannot be asked to run Vite on 
 
 1. **Stay loopback-only** — keeps the original slice promise; no public site.
 2. **Vercel static site** — chosen. Vite build of `@syncspace/web`. Lessons, lecture notes, review, and standalone boards stay on this device.
-3. **Also host Hocuspocus** — needed later for a public shared board. Not Vercel: the sync process uses a long-lived WebSocket and SQLite. A later host (Fly, Railway, a VPS) would need a new origin allow-list and must not commit room tokens.
+3. **Also host Hocuspocus** — needed for a public shared board. Not Vercel. See ADR-S08 and `docs/deploy-sync.md`.
 
 ## Security and compatibility
 
 - No room tokens in git, Vercel env, screenshots, or the shared document.
 - Production builds do **not** default to `ws://127.0.0.1`. That would be mixed content on https and would talk to the visitor’s machine.
-- The sync server remains loopback-only until a later ADR opens it.
+- The sync server remains loopback-only until you follow ADR-S08. Do not set sample-room helpers on a public box.
 - LanguageTool still leaves this device only after consent.
-- Release promise: visitors can study on the public site. “Connected” and “server checkpoint recorded” stay no until a real sync host is configured.
+- Release promise: visitors can study on the public site. “Connected” and “server checkpoint recorded” stay no until a real sync host is configured (`docs/deploy-sync.md`).
 
 ## Affected tests
 

@@ -14,6 +14,7 @@ import {
 import { ALPHABET } from "./alphabet.js";
 import { GRAMMAR_TOPICS } from "./grammar.js";
 import { LESSONS, ROADMAP, SENTENCE_TEMPLATES } from "./lessons.js";
+import { EXTRA_LEXICON, PRACTICE_LEXICON } from "./extra-practice.js";
 import { CORE_LEXICON } from "./lexicon.js";
 import { PHRASES } from "./phrases.js";
 import { SKILL_RESOURCES } from "./skills.js";
@@ -23,6 +24,7 @@ import { CURRICULUM_SOURCES } from "./sources.js";
 export { ALPHABET } from "./alphabet.js";
 export { GRAMMAR_TOPICS } from "./grammar.js";
 export { LESSONS, ROADMAP, SENTENCE_TEMPLATES } from "./lessons.js";
+export { EXTRA_LEXICON, PRACTICE_LEXICON, WEIL_CLAUSES, type WeilClause } from "./extra-practice.js";
 export { CORE_LEXICON } from "./lexicon.js";
 export { PHRASES } from "./phrases.js";
 export { PHONEMES } from "./sounds.js";
@@ -45,7 +47,7 @@ export type ValidatedCurriculum = {
 
 export function inquiryCorpus() {
   return {
-    lexemes: CORE_LEXICON,
+    lexemes: PRACTICE_LEXICON,
     phrases: PHRASES,
     grammar: GRAMMAR_TOPICS,
     phonemes: PHONEMES,
@@ -66,9 +68,10 @@ export function validateCurriculum(): ValidatedCurriculum {
   const skills = SKILL_RESOURCES.map((row) => skillResourceSchema.parse(row));
   CURRICULUM_SOURCES.forEach((row) => sourceCitationSchema.parse(row));
   SENTENCE_TEMPLATES.forEach((row) => sentenceTemplateSchema.parse(row));
+  EXTRA_LEXICON.forEach((row) => coreLexemeSchema.parse(row));
   return { lexemes, phrases, letters, phonemes, grammar, lessons, roadmap, skills };
 }
 
 export function lexiconTopics(): string[] {
-  return [...new Set(CORE_LEXICON.map((row) => row.topic))].sort((a, b) => a.localeCompare(b));
+  return [...new Set(PRACTICE_LEXICON.map((row) => row.topic))].sort((a, b) => a.localeCompare(b));
 }

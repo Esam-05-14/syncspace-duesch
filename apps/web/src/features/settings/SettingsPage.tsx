@@ -14,14 +14,18 @@ import {
 } from "@syncspace/personal-store";
 import { SAMPLE_ROOM_ID } from "@syncspace/contracts";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { downloadJson } from "../../lib/download.js";
 import { currentBoard } from "../../lib/board-session.js";
+import { requestSampleInvitation } from "../../lib/sample-room.js";
 import { clearToken, getToken, invitationUrl } from "../../lib/tokens.js";
 
 export function SettingsPage() {
   const [name, setName] = useState("Learner");
   const [rooms, setRooms] = useState<Array<{ roomId: string }>>([]);
-  const [invite, setInvite] = useState<string | null>(null);
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [inviteNote, setInviteNote] = useState<string | null>(null);
+  const [hasSampleToken, setHasSampleToken] = useState(() => Boolean(getToken(SAMPLE_ROOM_ID)));
   const [rememberWarning, setRememberWarning] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [reviewCount, setReviewCount] = useState(0);
@@ -82,9 +86,24 @@ export function SettingsPage() {
     }
   }
 
-  function showInvite() {
+  async function showInvite() {
     const token = getToken(SAMPLE_ROOM_ID);
-    setInvite(token ? invitationUrl(SAMPLE_ROOM_ID, token) : "No sample token in this tab. Open the sample lesson first.");
+    if (token) {
+      setInviteUrl(invitationUrl(SAMPLE_ROOM_ID, token));
+      setInviteNote(null);
+      setHasSampleToken(true);
+      return;
+    }
+    const result = await requestSampleInvitation();
+    if (result.status === "ready") {
+      setInviteUrl(result.url);
+      setInviteNote(null);
+      setHasSampleToken(true);
+      return;
+    }
+    setInviteUrl(null);
+    setInviteNote(result.message);
+    setHasSampleToken(false);
   }
 
   async function rememberCurrent() {
@@ -152,14 +171,31 @@ export function SettingsPage() {
           cannot erase copies already downloaded.
         </p>
         <div className="row">
-          <button type="button" className="secondary" onClick={showInvite}>
+          <button type="button" className="secondary" onClick={() => void showInvite()}>
             Show sample invitation
           </button>
-          <button type="button" className="secondary" onClick={() => void rememberCurrent()}>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => void rememberCurrent()}
+            disabled={!hasSampleToken}
+          >
             Remember this private room
           </button>
         </div>
-        {invite ? <p><code>{invite}</code></p> : null}
+        {inviteUrl ? (
+          <label className="invite-label">
+            Sample invitation
+            <textarea className="invite-box" readOnly value={inviteUrl} rows={3} />
+          </label>
+        ) : null}
+        {inviteNote ? (
+          <p className="banner">
+            {inviteNote}{" "}
+            <Link to="/">Open the home page</Link> to start a local board, or open the sample lesson
+            there first.
+          </p>
+        ) : null}
         {rememberWarning ? (
           <p className="banner">The token is now in this browser profile. Anyone using this profile can join.</p>
         ) : null}

@@ -14,9 +14,9 @@ SyncSpace Deutsch stays a deterministic collaborative German study workspace for
 
 ## Where we are
 
-First slice S0–S7 is recorded in Node. Solo lessons, inquiry, cover drill, lecture notes, LanguageTool (no key), and an in-app Guide are in the tree. Partner sync is loopback. Vercel can host the **website** only.
+First slice S0–S7 is recorded in Node. Solo lessons, inquiry, cover drill, lecture notes, LanguageTool (no key), and an in-app Guide are in the tree. Partner sync defaults to loopback. Vercel can host the **website** only. Hosted trusted-group sync is ADR-S08.
 
-Still not proven in a browser walk: two isolated profiles, server restart plus a third fresh client, production service-worker offline reload. Human German review is not recorded.
+Sat in a browser on 22 September 2026: two isolated profiles on the sample room, and restart plus a third fresh client restoring the last binary checkpoint. Still not proven: production service-worker offline reload. Human German review is not recorded.
 
 ## Waves
 
@@ -31,7 +31,7 @@ Prove the first-slice claims before adding more surface.
 
 **Release promise:** unchanged. Limits become recorded.
 
-Shipped in-tree: production service-worker registration, offline device banner, `docs/wave-0-walk.md`. Node two-client and checkpoint tests remain the recorded proof. A human still has to sit two isolated browser profiles and a production offline reload.
+Shipped in-tree: production service-worker registration, offline device banner, `docs/wave-0-walk.md`. Node two-client and checkpoint tests remain green. A human sat the two-profile and restart-plus-third-client walks on 22 September 2026. Production offline reload is still a human step.
 
 ### Wave 1 — Study loop on this device
 
@@ -60,6 +60,8 @@ Must not change: schema `1.0.0`; client-side seed of an empty room; review data 
 
 **Release promise:** changes. `connected` can be true off this laptop. Still a trusted group, not multi-tenant SaaS, not end-to-end encrypted.
 
+Shipped in-tree: ADR-S08, `resolveSyncAccess`, origin allow-list, sample-room/snapshot off unless forced, `docs/deploy-sync.md`, Dockerfile. Loopback `npm run dev` is unchanged. A human still has to run a real host and rebuild the website with `VITE_SYNC_WS` / `VITE_SYNC_HTTP`.
+
 ### Wave 3 — More original practice
 
 Author more draft words, phrases, and grammar. Device voice for **our** example sentences. Official Goethe / DW / Nachrichtenleicht stay https links.
@@ -68,7 +70,7 @@ Do not copy the Goethe Wortliste. Do not host exam audio. Do not treat LanguageT
 
 **Release promise:** more local material. Draft status unchanged.
 
-Shipped in-tree: more draft phrases (weather, home, phone, class, time), a weil/dass first-look grammar topic, and accusative fill after *haben* on `/learn/write`. All new records stay draft.
+Shipped in-tree: more draft phrases (weather, home, phone, class, time), twenty extra draft lexemes beside the locked core-500, a weil/dass first-look grammar topic, accusative fill after *haben*, a weil writing drill, and device voice on authored example sentences. All new records stay draft.
 
 ### Wave 4 — Hardening
 

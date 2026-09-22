@@ -1,4 +1,4 @@
-import { CORE_LEXICON, lexiconTopics } from "@syncspace/content";
+import { PRACTICE_LEXICON, lexiconTopics } from "@syncspace/content";
 import { CURRICULUM_BOARD_ID, contentHash } from "@syncspace/contracts";
 import { articleMix, foldGerman, lexemeToReviewPrompt } from "@syncspace/learning";
 import { enrollInReview, listSchedules } from "@syncspace/personal-store";
@@ -25,7 +25,7 @@ export function WordsPage() {
     }
   }, [params]);
 
-  const visible = CORE_LEXICON.filter((row) => {
+  const visible = PRACTICE_LEXICON.filter((row) => {
     if (topic !== "all" && row.topic !== topic) {
       return false;
     }
@@ -36,14 +36,14 @@ export function WordsPage() {
     return foldGerman(row.de).includes(needle) || foldGerman(row.en).includes(needle);
   });
 
-  const mix = articleMix(topic === "all" ? CORE_LEXICON : visible);
+  const mix = articleMix(topic === "all" ? PRACTICE_LEXICON : visible);
 
   useEffect(() => {
     void listSchedules().then((rows) => setQueued(new Set(rows.map((row) => row.cardId))));
   }, [message]);
 
   async function enroll(id: string) {
-    const lexeme = CORE_LEXICON.find((row) => row.id === id);
+    const lexeme = PRACTICE_LEXICON.find((row) => row.id === id);
     if (!lexeme) {
       return;
     }
@@ -70,9 +70,10 @@ export function WordsPage() {
   return (
     <>
       <p>
-        Five hundred everyday lemmas authored for this app. Not the Goethe A1 Wortliste. Gender
-        on nouns is the dictionary article only. After you add a card, study it under{" "}
-        <Link to="/review">private review</Link> or the <Link to="/learn/drill">cover drill</Link>.
+        Five hundred everyday lemmas plus extra draft practice words authored for this app. Not
+        the Goethe A1 Wortliste. Gender on nouns is the dictionary article only. After you add a
+        card, study it under <Link to="/review">private review</Link> or the{" "}
+        <Link to="/learn/drill">cover drill</Link>.
       </p>
       <ArticleMix mix={mix} />
       <div className="row" style={{ margin: "0.75rem 0", alignItems: "end" }}>
@@ -95,7 +96,7 @@ export function WordsPage() {
         </button>
       </div>
       <p className="meta">
-        Showing {visible.length} of {CORE_LEXICON.length}.
+        Showing {visible.length} of {PRACTICE_LEXICON.length}.
       </p>
       {message ? <p className="banner">{message}</p> : null}
       <div className="table-wrap">
@@ -130,6 +131,7 @@ export function WordsPage() {
                 </td>
                 <td>
                   <SpeakButton text={row.de} label="Speak" />
+                  <SpeakButton text={row.exampleDe} label="Hear example" />
                   {row.pos === "noun" ? (
                     <div>
                       <Link to={`/learn/builder?noun=${encodeURIComponent(row.de)}`}>Sentence</Link>

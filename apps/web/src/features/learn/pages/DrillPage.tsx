@@ -1,4 +1,4 @@
-import { CORE_LEXICON, PHRASES } from "@syncspace/content";
+import { PRACTICE_LEXICON, PHRASES } from "@syncspace/content";
 import { CURRICULUM_BOARD_ID, contentHash, createOpaqueId } from "@syncspace/contracts";
 import { checkArticleRecall, lexemeToReviewPrompt, pickDrillSession } from "@syncspace/learning";
 import { enrollInReview, listDue, listSchedules, rateCard } from "@syncspace/personal-store";
@@ -27,7 +27,7 @@ export function DrillPage() {
   }, [message, done]);
 
   const items = useMemo(
-    () => pickDrillSession({ lexemes: CORE_LEXICON, phrases: PHRASES, dueCardIds: dueIds, day }),
+    () => pickDrillSession({ lexemes: PRACTICE_LEXICON, phrases: PHRASES, dueCardIds: dueIds, day }),
     [dueIds, day],
   );
   const current = items[index];
@@ -44,7 +44,7 @@ export function DrillPage() {
     if (!current?.lexemeId) {
       return;
     }
-    const lexeme = CORE_LEXICON.find((row) => row.id === current.lexemeId);
+    const lexeme = PRACTICE_LEXICON.find((row) => row.id === current.lexemeId);
     if (!lexeme) {
       return;
     }

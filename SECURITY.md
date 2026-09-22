@@ -1,6 +1,6 @@
 # Security
 
-P0 is a **trusted private group** on loopback. It is not hardened multi-tenant classroom infrastructure.
+P0 is a **trusted private group**. Loopback is the default. ADR-S08 may bind off loopback only with an origin allow-list. It is not hardened multi-tenant classroom infrastructure.
 
 ## Facts, not fine print
 
@@ -13,6 +13,7 @@ P0 is a **trusted private group** on loopback. It is not hardened multi-tenant c
 ## Rules
 
 - Bind the sync server to `127.0.0.1` in development.
+- A hosted bind requires `SYNCSPACE_ALLOWED_ORIGINS`. Leave `/dev/sample-room` off on the public internet.
 - Store only a SHA-256 hash of each room token.
 - Never log tokens, note text, typed answers, private history, or full invitation URLs.
 - Render shared text as text. No raw HTML, script URLs, or arbitrary iframes.

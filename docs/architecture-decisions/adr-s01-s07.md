@@ -24,6 +24,8 @@ Pin Yjs 13 + `y-indexeddb` 9 + Hocuspocus 2.15 + `y-codemirror.next` 0.3. Do not
 
 Trusted-room capabilities. Not hardened multi-tenant classroom infrastructure. Shared boards are readable by participants **and** the server operator. Not end-to-end encrypted.
 
+Hosted trusted-group expansion is **ADR-S08** (`adr-s08-hosted-trusted-group.md`). Schema stays `1.0.0`. Still not multi-tenant and not end-to-end encrypted.
+
 ## ADR-S07 — Simple versioned box scheduler
 
 Transparent intervals. Not scientifically optimized spacing. Never invent a CEFR level or exam score.

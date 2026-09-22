@@ -4,7 +4,7 @@ Offline-first collaborative German study workspace. A small group builds **share
 
 This is ordinary software, not an AI wrapper. Shared editing, persistence, finite-answer checking, review scheduling, and sync diagnostics work without a language-model API. [Yjs](https://docs.yjs.dev) supplies merge mechanics; this repository supplies the learning model, shared/private split, recovery, authorization, interface, and tests.
 
-**Status:** first slice plus a public **website** on Vercel. Not a hosted classroom product. Partner sync stays loopback until a later host exists. See `docs/deploy-vercel.md`.
+**Status:** first slice plus a public **website** on Vercel. Partner sync defaults to loopback. A hosted trusted group is documented in ADR-S08 and `docs/deploy-sync.md`. Not multi-tenant SaaS. Not end-to-end encrypted.
 
 ## What you can do in this slice
 
@@ -27,7 +27,7 @@ npm run dev
 ```
 
 - Web: `http://127.0.0.1:5177`
-- Sync server: `http://127.0.0.1:4357` (loopback only)
+- Sync server: `http://127.0.0.1:4357` (loopback only unless you follow `docs/deploy-sync.md`)
 
 The sample room invitation is generated at runtime. The home page can request a **development-only** join helper. The token is not in git.
 
@@ -49,7 +49,7 @@ Awareness is presence only. Grades, answers, due dates, and room tokens do not b
 - A checkpoint receipt describes that checkpoint, not every later keystroke.
 - Browser storage can be evicted. Private review dies with the profile unless exported.
 - Debounced checkpoints have a crash window. We surface the recovered sequence; we do not claim zero data loss.
-- Loopback is not a study-partner URL. Vercel hosts the website only. A static host cannot run the sync server.
+- Loopback is not a study-partner URL. Vercel hosts the website only. A static host cannot run the sync server. A hosted trusted-group box can; the operator can read every shared board.
 - Capability token ≠ identity. Anyone with the token is an editor.
 - Shared boards are readable by participants and the server operator. This design is **not** end-to-end encrypted.
 
@@ -63,7 +63,7 @@ Awareness is presence only. Grades, answers, due dates, and room tokens do not b
 
 ## Roadmap
 
-P0 is the portfolio core (this slice, then hardened invitations, production service-worker offline proof, and a recorded German-content review). P1 adds remote hosting guidance, migrations, and more practice modes. P2 is optional audio, search, and (if ever) a separately consented assistant.
+P0 is the portfolio core. Wave 2 documents hosted trusted-group sync without changing schema `1.0.0`. Wave 3 adds extra draft practice. Wave 4 is invitation rotate UI, migrations, and three-client qualification. P2 is optional search and (if ever) a separately consented assistant.
 
 ## Library credits
 

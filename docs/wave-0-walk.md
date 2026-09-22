@@ -14,7 +14,7 @@ Two tabs in one profile are the same person.
 6. Edit the same vocabulary card from both. Last-writer-wins on the lexical JSON. The losing tab should keep a short-lived local draft.
 
 **Recorded in Node:** `tests/convergence/two-clients.test.ts`.  
-**Browser walk:** still a human step. This file is the checklist, not a claim that a reviewer sat both profiles today.
+**Browser walk:** sat 22 September 2026. Two isolated browsers on the sample room; an edit in one appeared in the other.
 
 ## Server restart and a third fresh client
 
@@ -24,7 +24,7 @@ Two tabs in one profile are the same person.
 4. Open a **third** isolated profile that has never held that room. It must restore the last binary checkpoint without help from an open peer.
 
 **Recorded in Node:** `tests/integration/checkpoint-restore.test.ts`.  
-**Browser walk:** still a human step.
+**Browser walk:** sat 22 September 2026. After **server checkpoint recorded**, sync was restarted; a third fresh profile restored the last binary board without an open peer.
 
 ## Production service worker
 

@@ -1,4 +1,4 @@
-import { CORE_LEXICON, SENTENCE_TEMPLATES } from "@syncspace/content";
+import { PRACTICE_LEXICON, SENTENCE_TEMPLATES } from "@syncspace/content";
 import { buildSentence } from "@syncspace/learning";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -6,10 +6,10 @@ import { SpeakButton } from "../SpeakButton.js";
 import { StationComplete } from "../StationComplete.js";
 
 export function BuilderPage() {
-  const nouns = useMemo(() => CORE_LEXICON.filter((row) => row.pos === "noun" && row.article), []);
-  const adjectives = useMemo(() => CORE_LEXICON.filter((row) => row.pos === "adj"), []);
+  const nouns = useMemo(() => PRACTICE_LEXICON.filter((row) => row.pos === "noun" && row.article), []);
+  const adjectives = useMemo(() => PRACTICE_LEXICON.filter((row) => row.pos === "adj"), []);
   const verbs = useMemo(
-    () => CORE_LEXICON.filter((row) => row.pos === "verb" && row.forms && row.transitive),
+    () => PRACTICE_LEXICON.filter((row) => row.pos === "verb" && row.forms && row.transitive),
     [],
   );
   const [params] = useSearchParams();

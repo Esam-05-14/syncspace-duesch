@@ -25,15 +25,18 @@ When time is tight, extra exercise modes and canvas decoration drop first. Offli
 | `/learn/drill` daily cover set | Deterministic mix; due nouns first | Ratings only if the word is already queued |
 | `/learn/lectures` one note per video or class | Personal IndexedDB; YouTube/Vimeo embed | Other class pages open in a new tab |
 | LanguageTool `de-DE` check | User-started public API after consent | Free, no key; text leaves this device; not a human review |
-| `/learn/write` article fill, accusative, word order | Deterministic from the authored corpus | Not a teacher mark; not a Goethe paper |
+| `/learn/write` article fill, accusative, word order, weil | Deterministic from the authored corpus | Not a teacher mark; not a Goethe paper |
+| Extra draft lexemes | 20 original lemmas beside the locked core-500 | Still draft. Not a Goethe list |
 | Human review of German | Not recorded | Starter and core-500 stay draft |
 | Vercel static website | `vercel.json` builds `@syncspace/web` | No sync server; no loopback default in production |
+| Hosted trusted-group sync | ADR-S08 + `docs/deploy-sync.md` | Operator can read boards. Sample-room off. Schema `1.0.0` |
 
 ## Enhancement waves
 
 | Wave | Status in this repo | Stop evidence |
 | --- | --- | --- |
-| 0 — Honesty | Walk documented; production SW registered; Node two-client and checkpoint tests still green | Browser two-profile walk and production offline reload are still human steps (`docs/wave-0-walk.md`) |
+| 0 — Honesty | Walk documented; two-profile live sync and restart-plus-third-client restore sat 22 September 2026; production SW registered; Node tests still green | Production offline reload is still a human step (`docs/wave-0-walk.md`) |
 | 1 — Study loop | LWW losing draft, stacked mobile canvas, export reminder, writing drills | Still draft German. Still not a CEFR path. |
-| 3 — More practice | Extra draft phrases; weil/dass first look; accusative fill after haben | Still draft. Still not a Goethe list. |
-| 2, 4–5 | Not started | Hosting needs an ADR. Do not sneak AI or Goethe copy into an earlier wave. |
+| 2 — Hosted trusted group | ADR-S08, origin allow-list, sample-room off off-loopback, `docs/deploy-sync.md` | Schema still `1.0.0`. Operator can read boards. Not E2E. Human still must run a real host. |
+| 3 — More practice | Extra draft phrases; extra draft lexemes; weil/dass first look; accusative fill; weil writing drill; device voice on authored examples | Still draft. Still not a Goethe list. |
+| 4–5 | Not started | Invitation rotate UI, migrations, three-client qualification. Do not sneak AI or Goethe copy into an earlier wave. |

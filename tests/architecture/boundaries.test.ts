@@ -48,6 +48,7 @@ describe("package boundaries", () => {
     const source = [
       read("apps/sync-server/src/index.ts"),
       read("apps/sync-server/src/sync/server.ts"),
+      read("apps/sync-server/src/http/access.ts"),
       read("apps/sync-server/src/documents/rooms.ts"),
       read("apps/sync-server/src/persistence/sqlite.ts"),
       read("apps/sync-server/src/auth/authorize.ts"),

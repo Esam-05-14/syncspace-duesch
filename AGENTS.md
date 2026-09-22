@@ -10,7 +10,8 @@ Read, in order, before changing behavior:
 2. `docs/versions.md`
 3. `docs/conflict-policy.md`
 4. `docs/architecture-decisions/adr-s01-s07.md`
-5. `packages/contracts/src/index.ts`
+5. `docs/architecture-decisions/adr-s08-hosted-trusted-group.md` before changing bind address, CORS, or `/dev/sample-room`
+6. `packages/contracts/src/index.ts`
 
 The source blueprint is the Word document dated 20 September 2026. A proposed deviation must state the problem, alternatives, security or compatibility impact, affected tests, and whether the release promise changes. Do not silently broaden scope or weaken a gate.
 

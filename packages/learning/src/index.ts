@@ -45,11 +45,14 @@ export {
   checkWordOrder,
   pickAccusativeFill,
   pickArticleFill,
+  pickWeilClause,
   pickWordOrder,
   shuffleDeterministic,
   tokenizeGermanSentence,
   type AccusativeFillItem,
   type ArticleFillItem,
+  type WeilClauseItem,
+  type WeilClauseSource,
   type WordOrderItem,
 } from "./writing.js";
 export { parseMediaUrl, type MediaRef } from "./media.js";
